@@ -12,19 +12,23 @@
         <form action="" method="post" novalidate>
 	  {{ form.hidden_tag() }}
           <div class="textbox">
-	    {{ form.username.label }}
 	    {{ form.username(placeholder="Username") }}
+	    {% for error in form.username.errors %}
+	    <span style="color: red;">[{{ error }}]</span>
+	    {% endfor %}
           </div>
 	  
           <div class="textbox">
-	    {{ form.password.label }}
 	    {{ form.password(placeholder="Password") }}
+	    {% for error in form.password.errors %}
+	    <span style="color: red;">[{{ error }}]</span>
+	    {% endfor %}
           </div>
           <div class="remember-me">
 	    {{ form.remember_me(id="remember") }}
 	    {{ form.remember_me.label(for="remember") }}
           </div>
-            <button type="submit" class="btn">{{ form.login.label }}</button>
+            {{ form.Login(class="btn") }}
         </form>
     </div>
 </body>
