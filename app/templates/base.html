@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width", initial-scale="1.0">
+    <title>{{ title }} - laptop_guard KEU</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all_student.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+  </head>
+
+  <body>
+    <section id="menu">
+      <div class="logo">
+        <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="">
+        <h2>Kotebe Educational University</h2>
+      </div>
+      <div class="items">
+        <li><i class="fa-solid fa-chart-pie"></i><a href="#">Dashboard</a></li>
+        <li><i class="fa-solid fa-users"></i><a href="#">All Students</a></li>
+        <li><i class="fa-solid fa-user-tie"></i><a href="#">All Students</a></li>
+        <li><i class="fa-solid fa-clock-rotate-left"></i><a href="#">All Students</a></li>
+      </div>
+    </section>
+
+    {% block content %}{% endblock %}
+  </body>
+</html>

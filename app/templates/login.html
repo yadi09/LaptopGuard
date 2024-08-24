@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <div class="login-box">
+        <h2>LaptopGuard</h2>
+        <form action="" method="post" novalidate>
+	  {{ form.hidden_tag() }}
+          <div class="textbox">
+	    {{ form.username.label }}
+	    {{ form.username(placeholder="Username") }}
+          </div>
+	  
+          <div class="textbox">
+	    {{ form.password.label }}
+	    {{ form.password(placeholder="Password") }}
+          </div>
+          <div class="remember-me">
+	    {{ form.remember_me(id="remember") }}
+	    {{ form.remember_me.label(for="remember") }}
+          </div>
+            <button type="submit" class="btn">{{ form.login.label }}</button>
+        </form>
+    </div>
+</body>
+</html>
