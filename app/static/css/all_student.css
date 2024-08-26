@@ -8,27 +8,31 @@
 
 body {
     width: 100%;
-    background: #e5e7eb;
+    background: #d6dae2;
     position: relative;
     display: flex;
+    position: fixed;
+    bottom: 0%;
+    top: 0%;
 }
 
 #menu {
     background: rgb(7, 9, 38);
     width: 300px;
-    height: 100;
+    height: 100%;
 }
 
 #menu .logo {
     display: flex;
     align-items: center;
     color: #fff;
-    padding: 30px 0 0 30px;
+    padding: 10px 0 0 10px;
 }
 
 #menu .logo img{
-    width: 80px;
+    width: 60px;
     margin-right: 15px;
+    border-radius: 50%;
 }
 
 #menu .items {
@@ -51,7 +55,7 @@ body {
 }
 
 #menu .items li i {
-    color: rgb(134, 141, 151);
+    color: rgb(255, 255, 255);
     width: 30px;
     height: 30px;
     line-height: 30px;
@@ -67,30 +71,46 @@ body {
 
 #menu .items li a {
     text-decoration: none;
-    color: rgb(134, 141, 151);
+    color: rgb(255, 255, 255);
     font-weight: 300px;
     transition: 0.3s ease;
 }
 
 #interface {
     width: calc(100% - 300px);
+    right: 0%;
+    left: 0%;
+    overflow: auto;
 }
 
 #interface .navigation {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
-    padding: 15px 30px;
+    background: #e9e9ed;
+    padding: 15px 20px;
     border-bottom: 3px solid #594ef7;
+    position: relative;
+}
+
+#interface .navigation h1 {
+    margin: 0;
+    text-align: center;
+}
+
+#interface .navigation #menu-bar {
+    position: absolute;
+    left: 20px;
+    font-size: 23px;
+    cursor: pointer;
+    display: none;
 }
 
 
-<!-- Not varified >
 #interface .body .search {
-    background: #594ef7;
     width: 100%;
     height: 100px;
+    margin-top: 30px;
     position: relative;
 }
 
@@ -98,4 +118,216 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100%;
+}
+
+#interface .body .search .search-bar input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70%;
+    height: 40%;
+    margin-left: 10px;
+    padding-left: 20px;
+    border-radius: 50px;
+}
+
+@media (max-width: 769px) {
+    #menu {
+        width: 270px;
+        position: fixed;
+        left: -270px;
+        transition: 0.3s ease;
+    } 
+
+    #menu.active {
+        left: 0px;
+    }
+
+    #interface .navigation #menu-bar {
+        display: initial;
+    }
+
+    #interface {
+        width: 100%;
+        display: inline-block;
+        transition: 0.3s ease;
+    }
+
+    #menu.active~#interface {
+        width: calc(100% - 270px);
+        margin-left: 270px;
+        transition: 0.3s ease;
+    }
+}  
+
+
+
+
+
+
+
+
+
+
+.std_list {
+    margin: 0px 20px 0px 20px;
+    padding-top: 50px;
+}
+
+.table-controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 10px;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.buttons button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.buttons button.delete {
+    background-color: #f44336;
+}
+
+.buttons button:hover {
+    background-color: #45a049;
+}
+
+.buttons button.delete:hover {
+    background-color: #e53935;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+.action-links a {
+    margin-right: 10px;
+    text-decoration: none;
+    color: #0066cc;
+    font-weight: bold;
+}
+
+.action-links a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+
+
+
+.registration-sidebar {
+    position: fixed;
+    right: -100%;
+    top: 0;
+    width: 81.2%;
+    height: 100%;
+    background-color: #ffffff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    transition: 0.5s ease;
+    z-index: 1000;
+    overflow: auto;
+}
+
+.registration-sidebar.open {
+    right: 0;
+}
+
+.registration-sidebar h2 {
+    text-align: center;
+    color: #333333;
+    margin-bottom: 20px;
+}
+
+.registration-sidebar label {
+    color: #333333;
+    margin-bottom: 5px;
+    display: block;
+    font-weight: bold;
+}
+
+.registration-sidebar input[type="text"],
+.registration-sidebar input[type="number"],
+.registration-sidebar select,
+.registration-sidebar input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+}
+
+.registration-sidebar .submit {
+    width: 100%;
+    padding: 10px;
+    background-color: #0d0d53;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.registration-sidebar .submit:hover {
+    background-color: #241691;
+}
+
+
+
+
+
+/* Close Button */
+.close-btn {
+    position: absolute;
+    width: 35px;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    color: #000000;
+    cursor: pointer;
+    background: none;
+    border: 3px solid black;
+    border-radius: 50px;
+}
+
+.close-btn:hover {
+    background-color: #e53935;
 }
