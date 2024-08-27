@@ -27,6 +27,7 @@ body {
     align-items: center;
     color: #fff;
     padding: 10px 0 0 10px;
+    border-radius: 50%;
 }
 
 #menu .logo img{

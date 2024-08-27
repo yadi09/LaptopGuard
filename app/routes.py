@@ -1,8 +1,8 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for
-from app.forms import LoginForm
+from app.forms import LoginForm, RegistrationForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User
+from app.models import User, Student
 import sqlalchemy as sa
 
 
@@ -15,11 +15,11 @@ def login_():
 def login():
     if current_user.is_authenticated:
         if current_user.id == 2:
-            return redirect(url_for('admin_dashboard'))
+            return redirect(url_for('admin'))
         elif current_user.id == 3:
-            return redirect(url_for('library_check_in'))
+            return redirect(url_for('lib'))
         else:
-            return redirect(url_for('exit_check_in'))
+            return redirect(url_for('exit'))
     form = LoginForm()
     if form.validate_on_submit():
         user = db.session.scalar(sa.select(User).where(User.username == form.username.data))
@@ -40,7 +40,9 @@ def login():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        student = db.session.scalar(select(Student).where(Student.student_id))
+        student = db.session.scalar(select(Student).where(Student.student_id == form.studentId.data))
+        if not student:
+            student = Student(student_id=form.studentId.data, fullname=form.fullname.data, gender=)
 
 
 @app.route('/library_check_in')
