@@ -1,8 +1,9 @@
 from app import app, db
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, jsonify
 from app.forms import LoginForm, RegistrationForm, SearchForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Student, Laptop
+from app.models import User, Student, Laptop, LibLogs
+from datetime import datetime
 import sqlalchemy as sa
 import os
 
@@ -42,12 +43,13 @@ def login():
 def lib():
     if current_user.username == 'lib':
         form = SearchForm()
-        student_id = form.student_id.data
-        student = Student.query.filter_by(student_id=student_id).first()
         if form.validate_on_submit():
+            student_id = form.student_id.data
+            student = Student.query.filter_by(student_id=student_id).first()
             if not student:
                 flash('Student not found', 'nfound')
-        return render_template('lib.html', form=form, student=student)
+            return render_template('lib.html', form=form, student=student)
+        return render_template('lib.html', form=form, student=None)
     else:
         logout_user()
         return redirect(url_for('login'))
@@ -74,6 +76,45 @@ def admin():
     else:
         logout()
         return redirect(url_for('login'))
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    form = SearchForm()
+    if form.validate_on_submit():
+        student_id = form.student_id.data
+        student = Student.query.filter_by(student_id=student_id).first()
+        if not student:
+            flash('Student not found', 'nfound')
+    return redirect('lib.html', form=form, student=student)
+
+
+@app.route('/update_lib_status/<student_id>', methods=['GET', 'POST'])
+def update_status(student_id):
+    student = db.session.scalar(
+        sa.select(Student).where(Student.student_id == student_id))
+
+    if student is None:
+            return jsonify({'error': 'Student not found'}), 404
+
+    if not student.logs:
+        new_log = LibLogs(student_id=student.student_id, status='IN')
+        db.session.add(new_log)
+    else:
+        last_log = student.logs[-1]
+        if last_log.status == 'OUT':
+            new_log = LibLogs(student_id=student.student_id, status='IN')
+            db.session.add(new_log)
+        else:
+            time_spent = datetime.utcnow() - last_log.timestamp
+            student.total_library_time += time_spent
+
+            new_log = LibLogs(student_id=student.student_id, status='OUT')
+            db.session.add(new_log)
+
+    db.session.commit()
+    return jsonify({'status': new_log.status,
+                    'total_library_time': str(student.total_library_time)})
 
 
 @app.route('/register_student', methods=['POST'])
@@ -170,17 +211,6 @@ def upload_imgs(form, student):
     db.session.commit()
 
     return True
-
-
-@app.route('/search', methods=['GET', 'POST'])
-def search():
-    form = SearchForm()
-    if form.validate_on_submit():
-        student_id = form.student_id.data
-        student = Student.query.filter_by(student_id=student_id).first()
-        if not student:
-            flash('Student not found', 'nfound')
-    return redirect('lib.html', form=form, student=student)
 
 
 

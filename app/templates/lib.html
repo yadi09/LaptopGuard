@@ -5,54 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Check In</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lib_exit.css') }}">
-
-    <style>
-        /* Basic styles for the sidebar */
-        #sidebar {
-            position: fixed;
-            right: 0;
-            top: 0;
-            width: 90%;
-            height: 100%;
-            background-color: white;
-            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-            z-index: 1000;
-            overflow-y: auto;
-	    padding: 10px 10px 10px 10px;
-        }
-        #sidebar.show {
-            transform: translateX(0);
-        }
-
-	#sidebar .info {
-	    display: flex;
-	    margin: 10px 10px 10px 20px;
-	   
-	}
-
-	#sidebar .info img{
-	    width: 300px;
-	    margin: 10px 10px 10px 10px;
-	}
-
-	#sidebar .laptop{
-	    padding: 20px 20px 20px 20px;
-	    display: flex;
-	}
-
-	#sidebar .laptop img{
-	    width: 300px
-	}
-    </style>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 </head>
+
+<style>
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            color: black;
+	    border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+	.btn-green {
+            background-color: green;
+        }
+        .btn-red {
+            background-color: red;
+        }
+</style>
+
 <body>
     <header class="header-bar">
         <div class="logo">
-            <a href="/">
-                <img src="images/logo2.png" alt="Logo">
+          <a href="/">
+	    <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="">
             </a>
         </div>
         <div class="header-title">
@@ -63,15 +42,14 @@
         </div>
     </header>
 
-    <div class="container">
-        <h1>Search for Student</h1>
+    <div class="form-container">
         <form method="POST">
             {{ form.hidden_tag() }}
-            {{ form.student_id.label }} {{ form.student_id(size=20) }}</br>
-            {{ form.submit() }}
+            {{ form.student_id(size=20, id='color-change', class='input', placeholder='Search') }}</br>
+            <button type="submit" class='search_button'><i class="fa-solid fa-magnifying-glass"></i></button>
         </form>
 
-
+	
 	<!-- Sidebar for student profile -->
         <div id="sidebar" class="{{ 'show' if student else '' }}">
             {% if student %}
@@ -82,7 +60,15 @@
 		<p><strong>Full Name: </strong> {{ student.fullname }}</p>
 		<p><strong>Department: </strong> {{ student.department }}</p>
 		<p><strong>Year: </strong> {{ student.year }}</p>
-		<p><strong>Status: </strong> <button>Out</button></p>
+		<p><strong>Status: </strong>
+		  <button id='status-btn' class='btn'>
+		    {% if not student.logs %}
+		    OUT
+		    {% else %}
+		    {{ 'IN' if student.logs[-1].status == 'IN' else 'OUT' }}
+		    {% endif %}
+		  </button>
+		</p>
 	      </div>
 	    </div>
 	    <hr>
@@ -94,6 +80,96 @@
             {% endif %}
         </div>
     </div>
-	
+
+
+
+    <div class="container2">
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Year</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="#">Student 1</a></td>
+                    <td>Department A</td>
+                    <td>Year 1</td>
+                    <td>2 hours</td>
+                </tr>
+                <tr>
+                    <td><a href="#">Student 2</a></td>
+                    <td>Department B</td>
+                    <td>Year 2</td>
+                    <td>1.5 hours</td>
+                </tr>
+                <tr>
+                    <td><a href="#">Student 3</a></td>
+                    <td>Department C</td>
+                    <td>Year 3</td>
+                    <td>3 hours</td>
+                </tr>
+                <tr>
+                    <td><a href="#">Student 4</a></td>
+                    <td>Department D</td>
+                    <td>Year 4</td>
+                    <td>1 hour</td>
+                </tr>
+                <tr>
+                    <td><a href="#">Student 5</a></td>
+                    <td>Department E</td>
+                    <td>Year 5</td>
+                    <td>4 hours</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
+<script>
+    function updateButtonColor(status) {
+        const statusBtn = document.getElementById('status-btn');
+
+        // Update the text content based on the status
+        statusBtn.textContent = status;
+
+        // Apply the correct color based on the status
+        if (status === 'IN') {
+            statusBtn.classList.add('btn-green');
+            statusBtn.classList.remove('btn-red');
+        } else if (status === 'OUT') {
+            statusBtn.classList.add('btn-red');
+            statusBtn.classList.remove('btn-green');
+        }
+    }
+
+    // Initial color update based on the current button text
+    updateButtonColor(document.getElementById('status-btn').textContent.trim());
+
+    document.getElementById('status-btn').addEventListener('click', function() {
+        const studentId = {{ student.student_id }};
+        fetch(`/update_lib_status/${studentId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update the button based on the response status
+            updateButtonColor(data.status);
+
+            // Optionally, hide the sidebar if required
+            document.getElementById('sidebar').classList.remove('show');
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
+    
+
 </body>
 </html>

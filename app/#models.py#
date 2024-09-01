@@ -40,7 +40,7 @@ class BaseModel():
         sa.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-
+pip show Flask Werkzeug
 class Student(db.Model, BaseModel):
     __tablename__ = 'students'
 
