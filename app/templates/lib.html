@@ -5,6 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Check In</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lib_exit.css') }}">
+
+    <style>
+        /* Basic styles for the sidebar */
+        #sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 90%;
+            height: 100%;
+            background-color: white;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+            overflow-y: auto;
+	    padding: 10px 10px 10px 10px;
+        }
+        #sidebar.show {
+            transform: translateX(0);
+        }
+
+	#sidebar .info {
+	    display: flex;
+	    margin: 10px 10px 10px 20px;
+	   
+	}
+
+	#sidebar .info img{
+	    width: 300px;
+	    margin: 10px 10px 10px 10px;
+	}
+
+	#sidebar .laptop{
+	    padding: 20px 20px 20px 20px;
+	    display: flex;
+	}
+
+	#sidebar .laptop img{
+	    width: 300px
+	}
+    </style>
+    
 </head>
 <body>
     <header class="header-bar">
@@ -20,5 +62,38 @@
             <a href="/logout" class="logout-link">Logout</a>
         </div>
     </header>
+
+    <div class="container">
+        <h1>Search for Student</h1>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.student_id.label }} {{ form.student_id(size=20) }}</br>
+            {{ form.submit() }}
+        </form>
+
+
+	<!-- Sidebar for student profile -->
+        <div id="sidebar" class="{{ 'show' if student else '' }}">
+            {% if student %}
+            <h2>Student Profile</h2>
+	    <div class='info'>
+	      <img src="{{ url_for('static', filename=student.profile_img[11:])}}">
+	      <div class='std_info'>
+		<p><strong>Full Name: </strong> {{ student.fullname }}</p>
+		<p><strong>Department: </strong> {{ student.department }}</p>
+		<p><strong>Year: </strong> {{ student.year }}</p>
+		<p><strong>Status: </strong> <button>Out</button></p>
+	      </div>
+	    </div>
+	    <hr>
+	    <div class='laptop'>
+	      {% for laptop_img in student.laptop.images  %}
+	      <img src="{{ url_for('static', filename=laptop_img.image_path[11:])}}">
+	      {% endfor %}
+	    </div>
+            {% endif %}
+        </div>
+    </div>
+	
 </body>
 </html>

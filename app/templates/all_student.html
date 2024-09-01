@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <section id="interface">
       <div class="navigation">
         <div id="menu-bar">
@@ -106,48 +107,85 @@
     <div class="registration-sidebar" id="registrationSidebar">
       <button class="close-btn" onclick="closeRegistration()">X</button>
       <h2>Student Registration</h2>
-      <form action="/register" method="post" enctype="multipart/form-data">
-          <label for="full_name">Full Name</label>
-          <input type="text" id="full_name" name="full_name" required>
+      <form action="/register_student" method="POST" enctype="multipart/form-data">
+	{{ form.hidden_tag() }}
 
-          <label for="student_id">Student ID</label>
-          <input type="number" id="student_id" name="student_id" required>
+	<p>
+	  {{ form.fullname.label }}
+	  {{ form.fullname(size=32) }}
+	  {% for error in form.fullname.errors %}
+	  <span style="color: red;">{{ error }}</span>
+	  {% endfor %}
+	</p>
 
-          <label for="gender">Gender</label>
-          <select id="gender" name="gender" required>
-              <option value="" disabled selected>Select Gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-          </select>
+	<p>
+	  {{ form.studentId.label }}
+	  {{ form.studentId(size=32) }}
+	  {% for error in form.studentId.errors %}
+	  <span style="color: red;">{{ error }}</span>
+	  {% endfor %}
+	</p>
 
-          <label for="year">Year</label>
-          <select id="year" name="year" required>
-              <option value="" disabled selected>Select Year</option>
-              <option value="1">1st Year</option>
-              <option value="2">2nd Year</option>
-              <option value="3">3rd Year</option>
-              <option value="4">4th Year</option>
-          </select>
+	<p>
+	  {{ form.gender.label }}
+	  {{ form.gender() }}
+	  {% for error in form.gender.errors %}
+	  <span style="color: red;">{{ error }}</span>
+	  {% endfor %}
+	</p>
 
-          <label for="department">Department</label>
-          <select id="department" name="department" required>
-              <option value="" disabled selected>Select Department</option>
-              <option value="cs">Computer Science</option>
-              <option value="eng">Engineering</option>
-              <option value="bio">Biology</option>
-              <option value="chem">Chemistry</option>
-              <option value="phy">Physics</option>
-              <!-- Add more departments as needed -->
-          </select>
 
-          <label for="profile_picture">Profile Picture</label>
-          <input type="file" id="profile_picture" name="profile_picture" accept="image/*" required>
+	<p>
+	  {{ form.year.label }}
+	  {{ form.year() }}
+	  {% for error in form.year.errors %}
+	  <span style="color: red;">{{ error }}</span>
+	  {% endfor %}
+	</p>
+	
+        <p>
+	  {{ form.department.label }}
+	  {{ form.department() }}
+	  {% for error in form.department.errors %}
+	  <span style="color: red;">{{ error }}</span>
+	  {% endfor %}
+	</p>
+	
+        <p>
+	  {{ form.profile_img.label }}
+	  {{ form.profile_img() }}
+	  {% for error in form.profile_img.errors %}
+	  <span style="color: red;">{{ error }}</span>
+	  {% endfor %}
+	</p>
+	
 
-          <label for="laptop_picture">Laptop Picture</label>
-          <input type="file" id="laptop_picture" name="laptop_picture" accept="image/*" required>
+	<p>
+	  {{ form.laptop_img1.label }}
+	  {{ form.laptop_img1() }}
+	  {% for error in form.laptop_img1.errors %}
+	  <span style="color: red;">{{ error }}</span>
+	  {% endfor %}
+	</p>
 
-          <button class="submit" type="submit">Register</button>
+	<p>
+	  {{ form.laptop_img2() }}
+	  {% for error in form.laptop_img2.errors %}
+	  <span style="color: red;">{{ error }}</span>
+	  {% endfor %}
+	</p>
+
+	<p>
+	  {{ form.laptop_img3() }}
+	  {% for error in form.laptop_img3.errors %}
+	  <span style="color: red;">{{ error }}</span>
+	  {% endfor %}
+	</p>
+
+	<p>
+	  {{ form.submit(class="submit") }}
+	</p>
+        
       </form>
   </div>
 
@@ -156,7 +194,7 @@
       const menu = document.getElementById('menu');
 
       menuBar.addEventListener('click', () => {
-      menu.classList.toggle('active');   
+      menu.classList.toggle('active'); 
       });
 
       function openRegistration() {
@@ -165,6 +203,12 @@
 
       function closeRegistration() {
             document.getElementById("registrationSidebar").classList.remove("open");
-        }
+      }
+
+      {% if show_sidebar == True %}
+      document.getElementById("registrationSidebar").classList.add("open");
+      {% endif %}
     </script>
+
+
 {% endblock %}

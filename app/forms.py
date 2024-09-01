@@ -43,14 +43,31 @@ class RegistrationForm(FlaskForm):
             ('ART', 'Arts')],
         validators=[DataRequired()])
 
-    profile_picture = FileField(
+    profile_img = FileField(
         'Profile Picture',
         validators=[FileAllowed(
             ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'svg'],
             'Images only!')])
-    laptop_picture = FileField(
-        'Laptop Picture',
-        validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'svg'],
+    laptop_img1 = FileField(
+        'Laptop Picture 1',
+        validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif',
+                                 'bmp', 'tiff', 'svg'],
+                                'Images only!')])
+    laptop_img2 = FileField(
+        'Laptop Picture 2',
+        validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif',
+                                 'bmp', 'tiff', 'svg'],
+                                'Images only!')])
+    laptop_img3 = FileField(
+        'Laptop Picture 3',
+        validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif',
+                                 'bmp', 'tiff', 'svg'],
                                 'Images only!')])
 
     submit = SubmitField('Register')
+
+
+
+class SearchForm(FlaskForm):
+    student_id = StringField('Student ID', validators=[DataRequired()])
+    submit = SubmitField('Search')
