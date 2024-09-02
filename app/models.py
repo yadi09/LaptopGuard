@@ -61,8 +61,14 @@ class Student(db.Model, BaseModel):
     laptop: so.Mapped['Laptop'] = so.relationship(
         'Laptop', back_populates='student')
 
-    logs: so.Mapped['LibLogs'] = so.relationship(
+    lib_logs: so.Mapped['LibLogs'] = so.relationship(
         'LibLogs',
+        back_populates='student',
+        cascade = 'all, delete-orphan',
+        collection_class=list)
+
+    exit_logs: so.Mapped['ExitLogs'] = so.relationship(
+        'ExitLogs',
         back_populates='student',
         cascade = 'all, delete-orphan',
         collection_class=list)
@@ -135,4 +141,19 @@ class LibLogs(db.Model):
 
     student: so.Mapped[Student] = so.relationship(
         'Student',
-        back_populates='logs')
+        back_populates='lib_logs')
+
+
+class ExitLogs(db.Model):
+    __tablename__ = 'exit_logs'
+    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
+    student_id: so.Mapped[str] = so.mapped_column(
+        sa.ForeignKey('students.student_id'), nullable=False)
+    timestamp: so.Mapped[datetime] = so.mapped_column(
+        sa.DateTime, default=datetime.utcnow)
+    status: so.Mapped[str] = so.mapped_column(
+        sa.String(20), nullable=False, default='OUT')
+
+    student: so.Mapped[Student] = so.relationship(
+        'Student',
+        back_populates='exit_logs')

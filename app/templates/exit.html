@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Check In</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lib_exit.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
+    <style>
+      .btn {
+          padding: 10px 20px;
+          border: none;
+          color: black;
+          border-radius: 50px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: background-color 0.3s;
+      }
+      
+      .btn-green {
+          background-color: green;
+      }
+      .btn-red {
+          background-color: red;
+      }
+    </style>
+    
 </head>
 <body>
     <header class="header-bar">
@@ -20,5 +41,139 @@
             <a href="/logout" class="logout-link">Logout</a>
         </div>
     </header>
+
+
+    <div class="form-container">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.student_id(size=20, id='search-input', class='input', placeholder='Search') }}</br>
+            <button type="submit" class='search_button'><i class="fa-solid fa-magnifying-glass"></i></button>
+        </form>
+
+
+        <!-- Sidebar for student profile -->
+        <div id="sidebar" class="{{ 'show' if student else '' }}">
+            {% if student %}
+            <h2>Student Profile</h2>
+            <div class='info'>
+              <img src="{{ url_for('static', filename=student.profile_img[11:])}}">
+              <div class='std_info'>
+                <p><strong>Full Name: </strong> {{ student.fullname }}</p>
+                <p><strong>Department: </strong> {{ student.department }}</p>
+                <p><strong>Year: </strong> {{ student.year }}</p>
+                <p><strong>Status: </strong>
+                  <button id='status-btn' class='btn'>
+                    {% if not student.exit_logs %}
+                    OUT
+                    {% else %}
+                    {{ 'IN' if student.exit_logs[-1].status == 'IN' else 'OUT' }}
+                    {% endif %}
+                  </button>
+                </p>
+              </div>
+            </div>
+            <hr>
+            <div class='laptop'>
+              {% for laptop_img in student.laptop.images  %}
+              <img src="{{ url_for('static', filename=laptop_img.image_path[11:])}}">
+              {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+    <div class="container2">
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Year</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="#">Student 1</a></td>
+                    <td>Department A</td>
+                    <td>Year 1</td>
+                    <td>2 hours</td>
+                </tr>
+                <tr>
+                    <td><a href="#">Student 2</a></td>
+                    <td>Department B</td>
+                    <td>Year 2</td>
+                    <td>1.5 hours</td>
+                </tr>
+                <tr>
+                    <td><a href="#">Student 3</a></td>
+                    <td>Department C</td>
+                    <td>Year 3</td>
+                    <td>3 hours</td>
+                </tr>
+                <tr>
+                    <td><a href="#">Student 4</a></td>
+                    <td>Department D</td>
+                    <td>Year 4</td>
+                    <td>1 hour</td>
+                </tr>
+                <tr>
+                    <td><a href="#">Student 5</a></td>
+                    <td>Department E</td>
+                    <td>Year 5</td>
+                    <td>4 hours</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
+<script>
+    function updateButtonColor(status) {
+        const statusBtn = document.getElementById('status-btn');
+
+        // Update the text content based on the status
+        statusBtn.textContent = status;
+
+        // Apply the correct color based on the status
+        if (status === 'IN') {
+            statusBtn.classList.add('btn-green');
+            statusBtn.classList.remove('btn-red');
+        } else if (status === 'OUT') {
+            statusBtn.classList.add('btn-red');
+            statusBtn.classList.remove('btn-green');
+        }
+    }
+
+  // Initial color update based on the current button text
+  const status = document.getElementById('status-btn').textContent.trim();
+  updateButtonColor(status);
+
+  document.getElementById('status-btn').addEventListener('click', function() {
+      const studentId = {{ student.student_id }};
+      fetch(`/update_exit_status/${studentId}`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+      })
+          .then(response => response.json())
+          .then(data => {
+              // Update the button based on the response status
+              updateButtonColor(data.status);
+              const searchInput = document.getElementById('search-input');
+              searchInput.value = "";
+	      
+              // Optionally, hide the sidebar if required
+              document.getElementById('sidebar').classList.remove('show');
+          })
+          .catch(error => console.error('Error:', error));
+  });
+</script>
+
+
 </body>
 </html>

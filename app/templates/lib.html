@@ -45,7 +45,7 @@
     <div class="form-container">
         <form method="POST">
             {{ form.hidden_tag() }}
-            {{ form.student_id(size=20, id='color-change', class='input', placeholder='Search') }}</br>
+            {{ form.student_id(size=20, id='search-input', class='input', placeholder='Search') }}</br>
             <button type="submit" class='search_button'><i class="fa-solid fa-magnifying-glass"></i></button>
         </form>
 
@@ -62,10 +62,10 @@
 		<p><strong>Year: </strong> {{ student.year }}</p>
 		<p><strong>Status: </strong>
 		  <button id='status-btn' class='btn'>
-		    {% if not student.logs %}
+		    {% if not student.lib_logs %}
 		    OUT
 		    {% else %}
-		    {{ 'IN' if student.logs[-1].status == 'IN' else 'OUT' }}
+		    {{ 'IN' if student.lib_logs[-1].status == 'IN' else 'OUT' }}
 		    {% endif %}
 		  </button>
 		</p>
@@ -147,8 +147,9 @@
         }
     }
 
-    // Initial color update based on the current button text
-    updateButtonColor(document.getElementById('status-btn').textContent.trim());
+  // Initial color update based on the current button text
+  var status = document.getElementById('status-btn').textContent.trim();
+  updateButtonColor(status);
 
     document.getElementById('status-btn').addEventListener('click', function() {
         const studentId = {{ student.student_id }};
@@ -162,6 +163,8 @@
         .then(data => {
             // Update the button based on the response status
             updateButtonColor(data.status);
+	    const searchInput = document.getElementById('search-input');
+	    searchInput.value = "";
 
             // Optionally, hide the sidebar if required
             document.getElementById('sidebar').classList.remove('show');

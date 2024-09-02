@@ -2,7 +2,7 @@ from app import app, db
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from app.forms import LoginForm, RegistrationForm, SearchForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Student, Laptop, LibLogs
+from app.models import User, Student, Laptop, LibLogs, ExitLogs
 from datetime import datetime
 import sqlalchemy as sa
 import os
@@ -24,7 +24,8 @@ def login():
             return redirect(url_for('exit'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = db.session.scalar(sa.select(User).where(User.username == form.username.data))
+        user = db.session.scalar(
+            sa.select(User).where(User.username == form.username.data))
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
@@ -45,7 +46,8 @@ def lib():
         form = SearchForm()
         if form.validate_on_submit():
             student_id = form.student_id.data
-            student = Student.query.filter_by(student_id=student_id).first()
+            student = Student.query.filter_by(
+                student_id=student_id).first()
             if not student:
                 flash('Student not found', 'nfound')
             return render_template('lib.html', form=form, student=student)
@@ -55,12 +57,19 @@ def lib():
         return redirect(url_for('login'))
 
 
-@app.route('/exit_check_in')
+@app.route('/exit_check_in', methods=['GET', 'POST'])
 @login_required
 def exit():
     if current_user.username == 'exit':
-        flash("welcome to LaptopGuard")
-        return render_template('exit.html')
+        form = SearchForm()
+        if form.validate_on_submit():
+            student_id = form.student_id.data
+            student = Student.query.filter_by(
+                student_id=student_id).first()
+            if not student:
+                flash('Student not found', 'nfound')
+            return render_template('exit.html', form=form, student=student)
+        return render_template('exit.html', form=form, student=None)
     else:
         logout_user()
         return redirect(url_for('login'))
@@ -90,18 +99,18 @@ def search():
 
 
 @app.route('/update_lib_status/<student_id>', methods=['GET', 'POST'])
-def update_status(student_id):
+def update_lib_status(student_id):
     student = db.session.scalar(
         sa.select(Student).where(Student.student_id == student_id))
 
     if student is None:
             return jsonify({'error': 'Student not found'}), 404
 
-    if not student.logs:
+    if not student.lib_logs:
         new_log = LibLogs(student_id=student.student_id, status='IN')
         db.session.add(new_log)
     else:
-        last_log = student.logs[-1]
+        last_log = student.lib_logs[-1]
         if last_log.status == 'OUT':
             new_log = LibLogs(student_id=student.student_id, status='IN')
             db.session.add(new_log)
@@ -115,6 +124,33 @@ def update_status(student_id):
     db.session.commit()
     return jsonify({'status': new_log.status,
                     'total_library_time': str(student.total_library_time)})
+
+
+
+
+@app.route('/update_exit_status/<student_id>', methods=['GET', 'POST'])
+def update_exit_status(student_id):
+    student = db.session.scalar(
+        sa.select(Student).where(Student.student_id == student_id))
+
+    if student is None:
+        return jsonify({'error': 'Student not found'}), 404
+
+    if not student.exit_logs:
+        new_log = ExitLogs(student_id=student.student_id, status='OUT')
+        db.session.add(new_log)
+    else:
+        last_log = student.exit_logs[-1]
+        if last_log.status == 'OUT':
+            new_log = ExitLogs(student_id=student.student_id, status='IN')
+            db.session.add(new_log)
+        else:
+            new_log = ExitLogs(student_id=student.student_id, status='OUT')
+            db.session.add(new_log)
+
+    db.session.commit()
+    return jsonify({'status': new_log.status})
+
 
 
 @app.route('/register_student', methods=['POST'])
