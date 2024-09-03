@@ -45,22 +45,22 @@ class RegistrationForm(FlaskForm):
 
     profile_img = FileField(
         'Profile Picture',
-        validators=[FileAllowed(
+        validators=[DataRequired(), FileAllowed(
             ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'svg'],
             'Images only!')])
     laptop_img1 = FileField(
         'Laptop Picture 1',
-        validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif',
+        validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif',
                                  'bmp', 'tiff', 'svg'],
                                 'Images only!')])
     laptop_img2 = FileField(
         'Laptop Picture 2',
-        validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif',
+        validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif',
                                  'bmp', 'tiff', 'svg'],
                                 'Images only!')])
     laptop_img3 = FileField(
         'Laptop Picture 3',
-        validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif',
+        validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif',
                                  'bmp', 'tiff', 'svg'],
                                 'Images only!')])
 

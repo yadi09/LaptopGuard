@@ -84,54 +84,15 @@
 
 
     <div class="container2">
-        <table class="result-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Department</th>
-                    <th>Year</th>
-                    <th>Duration</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><a href="#">Student 1</a></td>
-                    <td>Department A</td>
-                    <td>Year 1</td>
-                    <td>2 hours</td>
-                </tr>
-                <tr>
-                    <td><a href="#">Student 2</a></td>
-                    <td>Department B</td>
-                    <td>Year 2</td>
-                    <td>1.5 hours</td>
-                </tr>
-                <tr>
-                    <td><a href="#">Student 3</a></td>
-                    <td>Department C</td>
-                    <td>Year 3</td>
-                    <td>3 hours</td>
-                </tr>
-                <tr>
-                    <td><a href="#">Student 4</a></td>
-                    <td>Department D</td>
-                    <td>Year 4</td>
-                    <td>1 hour</td>
-                </tr>
-                <tr>
-                    <td><a href="#">Student 5</a></td>
-                    <td>Department E</td>
-                    <td>Year 5</td>
-                    <td>4 hours</td>
-                </tr>
-            </tbody>
-        </table>
+      <table class="result-table" id="update-table">
+	{% include 'checked_in_students_list.html' %}
+      </table>
     </div>
 
 
 
 <script>
-    function updateButtonColor(status) {
+  function updateButtonColor(status) {
         const statusBtn = document.getElementById('status-btn');
 
         // Update the text content based on the status
@@ -168,6 +129,9 @@
 
             // Optionally, hide the sidebar if required
             document.getElementById('sidebar').classList.remove('show');
+
+	    // Update the checked-in students table with the new HTML
+            document.getElementById('update-table').innerHTML = data.checked_in_students_html;
         })
         .catch(error => console.error('Error:', error));
     });

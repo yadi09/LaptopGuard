@@ -5,6 +5,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Student, Laptop, LibLogs, ExitLogs
 from datetime import datetime
 import sqlalchemy as sa
+import sqlalchemy.orm as so
 import os
 
 
@@ -43,6 +44,7 @@ def login():
 @login_required
 def lib():
     if current_user.username == 'lib':
+        checked_in_students = get_checked_in_students()
         form = SearchForm()
         if form.validate_on_submit():
             student_id = form.student_id.data
@@ -50,8 +52,16 @@ def lib():
                 student_id=student_id).first()
             if not student:
                 flash('Student not found', 'nfound')
-            return render_template('lib.html', form=form, student=student)
-        return render_template('lib.html', form=form, student=None)
+            return render_template(
+                'lib.html',
+                form=form,
+                student=student,
+                checked_in_students=checked_in_students)
+        return render_template(
+            'lib.html',
+            form=form,
+            student=None,
+            checked_in_students=checked_in_students)
     else:
         logout_user()
         return redirect(url_for('login'))
@@ -98,6 +108,31 @@ def search():
     return redirect('lib.html', form=form, student=student)
 
 
+
+def get_checked_in_students():
+    latest_log_alias = so.aliased(LibLogs)
+
+    subquery = (
+        sa.select(
+            latest_log_alias.student_id,
+            sa.func.max(latest_log_alias.timestamp).label('max_id')
+        )
+        .group_by(latest_log_alias.student_id)
+        .subquery()
+    )
+
+    query = (
+        sa.select(Student)
+        .join(subquery, Student.student_id == subquery.c.student_id)
+        .join(LibLogs, LibLogs.timestamp == subquery.c.max_id)
+        .where(LibLogs.status == 'IN')
+    )
+
+    checked_in_students = db.session.scalars(query).all()
+
+    return checked_in_students
+
+
 @app.route('/update_lib_status/<student_id>', methods=['GET', 'POST'])
 def update_lib_status(student_id):
     student = db.session.scalar(
@@ -122,8 +157,12 @@ def update_lib_status(student_id):
             db.session.add(new_log)
 
     db.session.commit()
+    checked_in_students = get_checked_in_students()
+    checked_in_students_html = render_template(
+        'checked_in_students_list.html', checked_in_students=checked_in_students)
     return jsonify({'status': new_log.status,
-                    'total_library_time': str(student.total_library_time)})
+                    'total_library_time': str(student.total_library_time),
+                    'checked_in_students_html': checked_in_students_html})
 
 
 
