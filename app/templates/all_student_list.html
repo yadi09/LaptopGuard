@@ -1,0 +1,30 @@
+<table>
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Name</th>
+      <th>Student Id</th>
+      <th>Department</th>
+      <th>Year</th>
+      <th>Total Lib Time</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for student in all_student %}
+    <tr>
+      <td><input type="checkbox"></td>
+      <td>{{ student.fullname }}</td>
+      <td>{{ student.student_id }}</td>
+      <td>{{ student.department }}</td>
+      <td>{{ student.year }}</td/>
+      <td>{{ student.total_library_time }}</td>
+      <td class="action-links">
+        <a href="#">View</a>
+        <a href="#">Edit</a>
+        <a href="#">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

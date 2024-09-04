@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request, jsonify
-from app.forms import LoginForm, RegistrationForm, SearchForm
+from app.forms import LoginForm, RegistrationForm, SearchForm, UpdateStudentForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Student, Laptop, LibLogs, ExitLogs
 from datetime import datetime
@@ -95,10 +95,12 @@ def exit():
 @app.route('/admin_dashboard', methods=['GET', 'POST'])
 @login_required
 def admin():
+    all_student = get_all_students()
     form = RegistrationForm()
     if current_user.username == 'admin':
         flash("welcome to LaptopGuard")
-        return render_template('all_student.html', form=form)
+        return render_template(
+            'all_student.html', form=form, all_student=all_student)
     else:
         logout()
         return redirect(url_for('login'))
@@ -162,6 +164,15 @@ def get_checked_out_students():
     checked_out_students = db.session.scalars(query).all()
 
     return checked_out_students
+
+
+def get_all_students():
+    query = sa.select(Student)
+    students = db.session.execute(query).all()
+    list_of_students = []
+    for std in students:
+        list_of_students.append(std[0])
+    return list_of_students
 
 
 @app.route('/update_lib_status/<student_id>', methods=['GET', 'POST'])
@@ -244,7 +255,7 @@ def register_student():
                 department=form.department.data
             )
 
-            
+
             retn_val = upload_imgs(form, student)
             if not retn_val:
                 show_sidebar = True
@@ -306,21 +317,59 @@ def upload_imgs(form, student):
     laptop_img3.save(laptop_img_path3)
     laptop.student = student
 
-    """laptop = Laptop()
-    laptop.student = student"""
-
-    """for i in range(3):
-        laptop_img_path = os.path.join(
-            student_laptop_folder, laptop_file[i])    
-        laptop.add_laptop_image(laptop_img_path)
-        file = request.files.get(f'laptop_img-{i}')
-        file.save(laptop_img_path)"""
         
     db.session.add(student)
     db.session.add(laptop)
     db.session.commit()
 
     return True
+
+
+
+
+@app.route('/update_student/<student_id>', methods=['GET', 'POST'])
+def update_student(student_id):
+    student = Student.query.get_or_404(student_id)
+    form = UpdateStudentForm(obj=student)
+
+    if form.validate_on_submit():
+        student.fullname = form.fullname.data
+        student.student_id = form.studentId.data
+        student.gender = form.gender.data
+        student.year = form.year.data
+        student.department = form.department.data
+
+        if form.profile_img.data:
+            if student.profile_img:
+                os.remove(student.profile_img)
+            profile_img_path = os.path.dirname(student.profile_img)
+            profile_img_filename = form.profile_img.data.filename
+            profile_img_file_path = os.path.join(
+                profile_img_path, profile_img_filename)
+            form.profile_img.data.save(profile_img_file_path)
+            student.profile_img = profile_img_file_path
+
+        for i in range(1, 4):
+            file_field = getattr(form, f'laptop_img{i}')
+            if file_field.data:
+                existing_img = student.laptop.images[i].image_path
+                if existing_img:
+                    os.remove(existing_img)
+                laptop_img_dirpath = os.path.dirname(existing_img)
+                laptop_img_filename = file_field.data.filename
+                laptop_img_filepath = os.path.join(
+                    laptop_img_dirpath, laptop_img_filename)
+                file_field.data.save(laptop_img_filepath)
+                student.laptop.images[i].image_path = laptop_img_filepath
+        db.session.commit()
+        flash('Student updated successfully!', 'success')
+        return redirect(url_for('admin_page'))
+    
+    return render_template('update_student.html', form=form, student=student)
+
+
+
+
 
 
 

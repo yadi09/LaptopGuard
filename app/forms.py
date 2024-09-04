@@ -21,15 +21,16 @@ class RegistrationForm(FlaskForm):
     studentId = StringField(
         'Student ID',
         validators=[DataRequired(), Length(max=20)],
-        render_kw={"placeholder": "25021/14"})
+        render_kw={"placeholder": "25021"})
 
     gender = SelectField(
         'Gender',
-        choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')],
+        choices=[('', 'Choose'),('M', 'Male'), ('F', 'Female'), ('O', 'Other')],
         validators=[DataRequired()])
     year = SelectField(
         'Year',
         choices=[
+            ('', 'Choose'),
             ('1', '1st Year'),
             ('2', '2nd Year'),
             ('3', '3rd Year'),
@@ -37,6 +38,7 @@ class RegistrationForm(FlaskForm):
         validators=[DataRequired()])
     department = SelectField(
         'Department', choices=[
+            ('', 'Choose'),
             ('CS', 'Computer Science'),
             ('ENG', 'Engineering'),
             ('BIZ', 'Business'),
@@ -71,3 +73,58 @@ class RegistrationForm(FlaskForm):
 class SearchForm(FlaskForm):
     student_id = StringField('Student ID', validators=[DataRequired()])
     submit = SubmitField('Search')
+
+
+
+class UpdateStudentForm(FlaskForm):
+    fullname = StringField(
+        'Full Name', validators=[DataRequired(), Length(min=1, max=20)])
+    studentId = StringField(
+        'Student ID',
+        validators=[DataRequired(), Length(max=20)],
+        render_kw={"placeholder": "25021"})
+
+    gender = SelectField(
+        'Gender',
+        choices=[('', 'Choose'),('M', 'Male'), ('F', 'Female'), ('O', 'Other')],
+        validators=[DataRequired()])
+    year = SelectField(
+        'Year',
+        choices=[
+            ('', 'Choose'),
+            ('1', '1st Year'),
+            ('2', '2nd Year'),
+            ('3', '3rd Year'),
+            ('4', '4th Year')],
+        validators=[DataRequired()])
+    department = SelectField(
+        'Department', choices=[
+            ('', 'Choose'),
+            ('CS', 'Computer Science'),
+            ('ENG', 'Engineering'),
+            ('BIZ', 'Business'),
+            ('ART', 'Arts')],
+        validators=[DataRequired()])
+
+    profile_img = FileField(
+        'Profile Picture',
+        validators=[FileAllowed(
+            ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'svg'],
+            'Images only!')])
+    laptop_img1 = FileField(
+        'Laptop Picture 1',
+        validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif',
+                                 'bmp', 'tiff', 'svg'],
+                                'Images only!')])
+    laptop_img2 = FileField(
+        'Laptop Picture 2',
+        validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif',
+                                 'bmp', 'tiff', 'svg'],
+                                'Images only!')])
+    laptop_img3 = FileField(
+        'Laptop Picture 3',
+        validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif',
+                                 'bmp', 'tiff', 'svg'],
+                                'Images only!')])
+
+    submit = SubmitField('Update')
