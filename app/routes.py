@@ -71,6 +71,7 @@ def lib():
 @login_required
 def exit():
     if current_user.username == 'exit':
+        checked_out_students = get_checked_out_students()
         form = SearchForm()
         if form.validate_on_submit():
             student_id = form.student_id.data
@@ -78,8 +79,14 @@ def exit():
                 student_id=student_id).first()
             if not student:
                 flash('Student not found', 'nfound')
-            return render_template('exit.html', form=form, student=student)
-        return render_template('exit.html', form=form, student=None)
+            return render_template('exit.html',
+                                   form=form,
+                                   student=student,
+                                   checked_out_students=checked_out_students)
+        return render_template('exit.html',
+                               form=form,
+                               student=None,
+                               checked_out_students=checked_out_students)
     else:
         logout_user()
         return redirect(url_for('login'))
@@ -131,6 +138,30 @@ def get_checked_in_students():
     checked_in_students = db.session.scalars(query).all()
 
     return checked_in_students
+
+
+def get_checked_out_students():
+    latest_log_alias = so.aliased(ExitLogs)
+
+    subquery = (
+        sa.select(
+            latest_log_alias.student_id,
+            sa.func.max(latest_log_alias.timestamp).label('max_id')
+        )
+        .group_by(latest_log_alias.student_id)
+        .subquery()
+    )
+
+    query = (
+        sa.select(Student)
+        .join(subquery, Student.student_id == subquery.c.student_id)
+        .join(ExitLogs, ExitLogs.timestamp == subquery.c.max_id)
+        .where(ExitLogs.status == 'OUT')
+    )
+
+    checked_out_students = db.session.scalars(query).all()
+
+    return checked_out_students
 
 
 @app.route('/update_lib_status/<student_id>', methods=['GET', 'POST'])
@@ -188,7 +219,11 @@ def update_exit_status(student_id):
             db.session.add(new_log)
 
     db.session.commit()
-    return jsonify({'status': new_log.status})
+    checked_out_students = get_checked_out_students()
+    checked_out_students_html = render_template(
+        'checked_out_students_list.html', checked_out_students=checked_out_students)
+    return jsonify({'status': new_log.status,
+                    'checked_out_students_html': checked_out_students_html})
 
 
 

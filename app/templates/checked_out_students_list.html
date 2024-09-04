@@ -1,0 +1,20 @@
+<thead>
+  <tr>
+    <th>Name</th>
+    <th>Department</th>
+    <th>Year</th>
+    <th>Check In Time</th>
+  </tr>
+</thead>
+<tbody>
+  {% for student in checked_out_students %}
+  {% if student.exit_logs %}
+  <tr>
+    <td><a href="#">{{ student.fullname }}</a></td>
+    <td>{{ student.department }}</td>
+    <td>{{ student.year }}</td>
+    <td>{{ student.exit_logs[-1].timestamp }}</td>
+  </tr>
+  {% endif %}
+  {% endfor %}
+</tbody>
