@@ -55,7 +55,7 @@ class Student(db.Model, BaseModel):
         sa.types.Interval(), default=timedelta(seconds=0), nullable=False)
 
     laptop_id: so.Mapped[int] = so.mapped_column(
-        sa.ForeignKey('laptops.id'), nullable=True)
+        sa.ForeignKey('laptops.id', ondelete='CASCADE'), nullable=True)
 
     
     laptop: so.Mapped['Laptop'] = so.relationship(
@@ -133,7 +133,8 @@ class LibLogs(db.Model):
     __tablename__ = 'lib_logs'
     id: so.Mapped['int'] = so.mapped_column(sa.Integer, primary_key=True)
     student_id: so.Mapped[str] = so.mapped_column(
-        sa.ForeignKey('students.student_id'), nullable=False)
+        sa.ForeignKey('students.student_id', ondelete='CASCADE'),
+        nullable=False)
     timestamp: so.Mapped[datetime] = so.mapped_column(
         sa.DateTime, default=datetime.utcnow)
     status: so.Mapped[str] = so.mapped_column(
@@ -148,7 +149,8 @@ class ExitLogs(db.Model):
     __tablename__ = 'exit_logs'
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
     student_id: so.Mapped[str] = so.mapped_column(
-        sa.ForeignKey('students.student_id'), nullable=False)
+        sa.ForeignKey('students.student_id', ondelete='CASCADE'),
+        nullable=False)
     timestamp: so.Mapped[datetime] = so.mapped_column(
         sa.DateTime, default=datetime.utcnow)
     status: so.Mapped[str] = so.mapped_column(

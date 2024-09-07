@@ -200,15 +200,15 @@ body {
 }
 
 .buttons button.delete {
-    background-color: #f44336;
+    background-color: #ff0707;
 }
 
 .buttons button:hover {
-    background-color: #45a049;
+    background-color: #45a069;
 }
 
 .buttons button.delete:hover {
-    background-color: #e53935;
+    background-color: #e53915;
 }
 
 table {

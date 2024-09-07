@@ -1,9 +1,10 @@
 <table>
   <thead>
     <tr>
-      <th>No</th>
+      <th><input type="checkbox" id="select-all"></th>
       <th>Name</th>
       <th>Student Id</th>
+      <th>gender</th>
       <th>Department</th>
       <th>Year</th>
       <th>Total Lib Time</th>
@@ -13,16 +14,17 @@
   <tbody>
     {% for student in all_student %}
     <tr>
-      <td><input type="checkbox"></td>
+      <td><input type="checkbox" class="student-checkbox" value={{ student.student_id }}></td>
       <td>{{ student.fullname }}</td>
       <td>{{ student.student_id }}</td>
+      <td>{{ student.gender }}</td>
       <td>{{ student.department }}</td>
       <td>{{ student.year }}</td/>
       <td>{{ student.total_library_time }}</td>
       <td class="action-links">
-        <a href="#">View</a>
-        <a href="#">Edit</a>
-        <a href="#">Delete</a>
+	<a href="#">View</a>  
+	<button class="edit-btn" onclick="openUpdatePage('{{ student.student_id }}')">Edit</button>
+	  <a href="#">Delete</a>
       </td>
     </tr>
     {% endfor %}

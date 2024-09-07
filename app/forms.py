@@ -81,8 +81,7 @@ class UpdateStudentForm(FlaskForm):
         'Full Name', validators=[DataRequired(), Length(min=1, max=20)])
     studentId = StringField(
         'Student ID',
-        validators=[DataRequired(), Length(max=20)],
-        render_kw={"placeholder": "25021"})
+        validators=[DataRequired(), Length(max=20)])
 
     gender = SelectField(
         'Gender',

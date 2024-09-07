@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Student Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: inline;
+	    background-color: #faf7f7;
+        }
+
+        header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #c5c5ca;
+            color: black;
+            width: 100%;
+	    border-bottom: 2px solid black;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .update {
+            padding: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-group > div > label,
+        .form-group > div > input {
+            margin: 5px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="file"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-group input[type="file"] {
+            padding: 5px;
+        }
+
+        .profile_img,
+        .laptop-img {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .upload,
+        .exist-img {
+            width: 100%;
+        }
+
+        .upload label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .exist-img img {
+            max-width: 100%;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .laptop-img .laptop {
+            width: 30%;
+            text-align: center;
+        }
+
+        .laptop label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .laptop img {
+            max-width: 100%;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+
+        hr {
+            margin: 20px 0;
+            border: none;
+            border-top: 2px solid #333;
+        }
+
+        .button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button[type="submit"]:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+  <header>
+    <h1>Update Student Data</h1>
+  </header>
+  <div class="update">
+    <form action="{{ url_for('update_student', student_id=student.student_id) }}" method="post" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        <div>
+	  {{ form.fullname.label(for="full_name") }}
+	  {{ form.fullname(id="full_name") }}
+        </div>
+        <div>
+	  {{ form.studentId.label(for="student_id") }}
+	  {{ form.studentId(id="student_id", value=student.student_id, readonly=True) }}
+        </div>
+      </div>
+      <div class="form-group">
+        <div>
+	  {{ form.year.label(for="year") }}
+	  {{ form.year(id="year") }}
+        </div>
+        <div>
+	  {{ form.department.label(for="department") }}
+	  {{ form.department(id="department") }}
+        </div>
+        <div>
+	  {{ form.gender.label(for="gender") }}
+	  {{ form.gender(id="gender") }}
+        </div>
+      </div>
+      <hr>
+      <div class="profile_img">
+        <div class="upload">
+	  {{ form.profile_img.label(for="profile_picture") }}
+	  {{ form.profile_img(id="profile_picture", value=None) }}
+        </div>
+        <div class="exist-img">
+	  {% if student.profile_img %}
+	  <img src="{{ url_for('static', filename='uploads/' ~ student.profile_img[19:]) }}">
+	  {% endif %}
+
+        </div>
+      </div>
+      <hr>
+      <div class="laptop-img">
+        <div class="laptop">
+          <label>Laptop 1</label>
+	  {% if student.laptop.images[0].image_path %}
+	  <img src="{{ url_for('static', filename='uploads/' ~ student.laptop.images[0].image_path[19:]) }}">
+	  {% endif %}
+	  {{ form.laptop_img1(id="laptop_picture1", value=None) }}
+        </div>
+	
+        <div class="laptop">
+          <label>Laptop 2</label>
+	  {% if student.laptop.images[1].image_path %}
+	  <img src="{{ url_for('static', filename='uploads/' ~ student.laptop.images[1].image_path[19:]) }}">
+          {% endif %}
+	  {{ form.laptop_img2(id="laptop_picture2") }}
+        </div>
+
+        <div class="laptop">
+          <label>Laptop 3</label>
+	  {% if student.laptop.images[2].image_path %}
+	  <img src="{{ url_for('static', filename='uploads/' ~ student.laptop.images[2].image_path[19:]) }}">
+	  {% endif %}
+	  {{ form.laptop_img3(id="laptop_picture3") }}
+        </div>
+      </div>
+      {{ form.submit(class="button") }}
+    </form>
+  </div>
+</body>
+</html>

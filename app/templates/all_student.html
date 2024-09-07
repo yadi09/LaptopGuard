@@ -21,7 +21,7 @@
     <div class="std_list">
       <div class="table-controls">
         <div class="buttons">
-            <button class="delete">Delete</button>
+            <button id="deleteButton" class="delete">Delete</button>
             <button class="add-new" onclick="openRegistration()">Add New Student</button>
         </div>
       </div>
@@ -33,90 +33,13 @@
 
     </section>
 
-    <div class="registration-sidebar" id="registrationSidebar">
-      <button class="close-btn" onclick="closeRegistration()">X</button>
-      <h2>Student Registration</h2>
-      <form action="/register_student" method="POST" enctype="multipart/form-data">
-	{{ form.hidden_tag() }}
+{% include 'registration.html' %}
 
-	<p>
-	  {{ form.fullname.label }}
-	  {{ form.fullname(size=32) }}
-	  {% for error in form.fullname.errors %}
-	  <span style="color: red;">{{ error }}</span>
-	  {% endfor %}
-	</p>
+<div id="updateSidebar" style="display:none; position:fixed; top:0; right:0; width:83%; height:100%; background-color:white; box-shadow:-2px 0 5px rgba(0,0,0,0.5); z-index:1000;">
+  <button class="close-btn" onclick="closeUpdatePage()">X</button>
+  <iframe id="updateIframe" style="width:100%; height:100%; border:none;"></iframe>
+</div>
 
-	<p>
-	  {{ form.studentId.label }}
-	  {{ form.studentId(size=32) }}
-	  {% for error in form.studentId.errors %}
-	  <span style="color: red;">{{ error }}</span>
-	  {% endfor %}
-	</p>
-
-	<p>
-	  {{ form.gender.label }}
-	  {{ form.gender() }}
-	  {% for error in form.gender.errors %}
-	  <span style="color: red;">{{ error }}</span>
-	  {% endfor %}
-	</p>
-
-
-	<p>
-	  {{ form.year.label }}
-	  {{ form.year() }}
-	  {% for error in form.year.errors %}
-	  <span style="color: red;">{{ error }}</span>
-	  {% endfor %}
-	</p>
-	
-        <p>
-	  {{ form.department.label }}
-	  {{ form.department() }}
-	  {% for error in form.department.errors %}
-	  <span style="color: red;">{{ error }}</span>
-	  {% endfor %}
-	</p>
-	
-        <p>
-	  {{ form.profile_img.label }}
-	  {{ form.profile_img() }}
-	  {% for error in form.profile_img.errors %}
-	  <span style="color: red;">{{ error }}</span>
-	  {% endfor %}
-	</p>
-	
-
-	<p>
-	  {{ form.laptop_img1.label }}
-	  {{ form.laptop_img1() }}
-	  {% for error in form.laptop_img1.errors %}
-	  <span style="color: red;">{{ error }}</span>
-	  {% endfor %}
-	</p>
-
-	<p>
-	  {{ form.laptop_img2() }}
-	  {% for error in form.laptop_img2.errors %}
-	  <span style="color: red;">{{ error }}</span>
-	  {% endfor %}
-	</p>
-
-	<p>
-	  {{ form.laptop_img3() }}
-	  {% for error in form.laptop_img3.errors %}
-	  <span style="color: red;">{{ error }}</span>
-	  {% endfor %}
-	</p>
-
-	<p>
-	  {{ form.submit(class="submit") }}
-	</p>
-        
-      </form>
-  </div>
 
     <script>
       const menuBar = document.getElementById('menu-bar');
@@ -125,6 +48,14 @@
       menuBar.addEventListener('click', () => {
       menu.classList.toggle('active'); 
       });
+
+      function openUpdateForm() {
+          document.getElementById("updateSidebar").classList.add("show");
+      }
+
+      function closeUpdateForm() {
+          document.getElementById("updateSidebar").classList.remove("show");
+      }
 
       function openRegistration() {
           document.getElementById("registrationSidebar").classList.add("open");
@@ -137,6 +68,71 @@
       {% if show_sidebar == True %}
       document.getElementById("registrationSidebar").classList.add("open");
       {% endif %}
+
+
+
+      function openUpdatePage(studentId) {
+          const sidebar = document.getElementById("updateSidebar");
+          const iframe = document.getElementById("updateIframe");
+
+          // Load the update page in the iframe
+          iframe.src = `/update_student/${studentId}`;
+
+          // Show the sidebar
+          sidebar.style.display = "block";
+      }
+
+      function closeUpdatePage() {
+          const sidebar = document.getElementById("updateSidebar");
+          sidebar.style.display = "none";
+      }
+
+
+      document.getElementById('select-all').onclick = function() {
+	  var checkboxs = document.querySelectorAll('input[type="checkbox"]');
+	  for (var checkbox of checkboxs) {
+	      checkbox.checked = this.checked;
+	  }
+      }
+
+
+      document.getElementById('deleteButton').addEventListener('click', function() {
+	  fetch('{{ url_for("delete_selected_students") }}', {
+	      method: 'POST',
+	      headers: {
+		  'Content-Type': 'application/json',
+	      },
+	      body: JSON.stringify({
+		  selected_students: getSelectedStudents()
+	      })
+	  })
+	      .then(response => response.json())
+	      .then(data => {
+		  if (data.success) {
+		      alert('Selected students deleted successfully!');
+		      window.location.href = window.location.href;
+		  }
+		  if (data.success === False) {
+		      alert('Selected students deleted unsuccessfully!');
+		  }
+	      })
+	      .catch(error => console.error('Error:', error));
+      });
+
+
+      function getSelectedStudents() {
+	  const selected = [];
+
+	  const checkboxes = document.querySelectorAll('.student-checkbox');
+
+	  checkboxes.forEach(function(checkbox) {
+	      if (checkbox.checked) {
+		  selected.push(checkbox.value);
+	      }
+	  });
+
+	  return selected;
+      }
     </script>
 
 

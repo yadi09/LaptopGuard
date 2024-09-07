@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/std_profile.css') }}">
+</head>
+<body>
+    <!-- Main container -->
+    <div class="container">
+        <!-- Header Title -->
+        <h1 class="page-title">Student Profile Page</h1>
+
+        <!-- Section 1: Student Profile Information -->
+        <div class="profile-section">
+            <div class="profile-image">
+                <img src="images/photo_1675925543917299886_c.jpg" alt="Student Profile Image">
+            </div>
+            <div class="student-info">
+                <h2>John Doe</h2>
+                <p>Department: Computer Science</p>
+                <p>Year: Senior</p>
+                <p>Total Library Time: 120 hours</p>
+            </div>
+        </div>
+
+        <!-- Section 2: Student Laptop Images -->
+        <div class="laptops-section">
+            <h3>Student Laptops</h3>
+            <div class="laptop-images">
+                <img src="images/Screenshot 2024-08-08 141404.png" alt="Laptop 1">
+                <img src="images/Screenshot 2024-08-20 074703.png" alt="Laptop 2">
+                <img src="images/Screenshot 2024-08-20 074923.png" alt="Laptop 3">
+            </div>
+        </div>
+
+        <!-- Section 3: Student Log History -->
+        <div class="log-history-section">
+            <h3>Log History</h3>
+            <div class="log-buttons">
+                <button id="library-log-btn">Library Log History</button>
+                <button id="exit-log-btn">Exit Log History</button>
+            </div>
+            <!-- Tables hidden by default -->
+            <div id="library-log" class="log-table">
+                <h4>Library Log</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2024-09-01</td>
+                            <td>08:00 AM</td>
+                            <td>10:00 AM</td>
+                        </tr>
+                        <!-- More rows here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="exit-log" class="log-table">
+                <h4>Exit Log</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Exit Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2024-09-01</td>
+                            <td>06:00 PM</td>
+                        </tr>
+                        <!-- More rows here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/std_profile.js') }}"></script>
+</body>
+</html>

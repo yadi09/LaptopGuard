@@ -2,7 +2,7 @@ from app import app, db
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from app.forms import LoginForm, RegistrationForm, SearchForm, UpdateStudentForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Student, Laptop, LibLogs, ExitLogs
+from app.models import User, Student, Laptop, LibLogs, ExitLogs, LaptopImage
 from datetime import datetime
 import sqlalchemy as sa
 import sqlalchemy.orm as so
@@ -167,12 +167,14 @@ def get_checked_out_students():
 
 
 def get_all_students():
+    students = Student.query.all()
+    """
     query = sa.select(Student)
     students = db.session.execute(query).all()
     list_of_students = []
     for std in students:
-        list_of_students.append(std[0])
-    return list_of_students
+        list_of_students.append(std[0])"""
+    return students
 
 
 @app.route('/update_lib_status/<student_id>', methods=['GET', 'POST'])
@@ -235,6 +237,88 @@ def update_exit_status(student_id):
         'checked_out_students_list.html', checked_out_students=checked_out_students)
     return jsonify({'status': new_log.status,
                     'checked_out_students_html': checked_out_students_html})
+
+
+
+@app.route('/delete_selected_students', methods=['POST'])
+def delete_selected_students():
+    try:
+        data = request.get_json()
+        selected_students = data.get('selected_students', [])
+        if not selected_students:
+            return jsonify(success=False,
+                           message="No students selected"), 400
+   
+        ExitLogs.query.filter(ExitLogs.student_id.in_(
+            selected_students)).delete(synchronize_session=False)
+        LibLogs.query.filter(LibLogs.student_id.in_(
+            selected_students)).delete(synchronize_session=False)
+
+        for std in selected_students:
+            student = Student.query.filter(
+                Student.student_id == std).first()
+            laptop = Laptop.query.filter(
+                Laptop.id == student.laptop_id).first()
+            laptop_img = LaptopImage.query.filter(
+                LaptopImage.laptop_in_id == laptop.id).all()
+
+            "delete profile img and dir, std dir"
+            if os.path.exists(student.profile_img):
+                os.remove(student.profile_img)
+
+            profile_img_dir_path = os.path.dirname(student.profile_img)
+            std_dir = os.path.dirname(profile_img_dir_path)
+            """
+            if os.path.exists(profile_img_dir_path):
+                try:
+                    os.rmdir(dir_path)
+                    os.rmdir(std_dir)
+                except Exception:
+                    pass"""
+
+            "delete laptop img and dir"
+            for lp_img in laptop_img:
+                if os.path.exists(lp_img.image_path):
+                    os.remove(lp_img.image_path)
+
+            dir_path = os.path.dirname(laptop_img[0].image_path)
+            if os.path.exists(dir_path):
+                try:
+                    os.rmdir(dir_path)
+                except Exception:
+                    pass
+
+            "delete profile_img dir and student dir"
+            if os.path.exists(profile_img_dir_path):
+                try:
+                    os.rmdir(profile_img_dir_path)
+                    os.rmdir(std_dir)
+                except Exception:
+                    pass
+
+            "delete proccess"
+            LaptopImage.query.filter(
+                LaptopImage.laptop_in_id == laptop.id).delete(
+                    synchronize_session=False)
+
+            Student.query.filter(
+                Student.student_id == student.student_id).delete(
+                    synchronize_session=False)
+
+            Laptop.query.filter(Laptop.id == laptop.id).delete(
+                synchronize_session=False)
+
+            db.session.commit()
+
+        return jsonify(
+            success=True,
+            message=f"Deleted {len(selected_students)} students.")
+
+    except Exception as e:
+        return jsonify(
+            success=False,
+            message="An error occurred while deleting students.",
+            error=str(e)), 500
 
 
 
@@ -326,10 +410,9 @@ def upload_imgs(form, student):
 
 
 
-
 @app.route('/update_student/<student_id>', methods=['GET', 'POST'])
 def update_student(student_id):
-    student = Student.query.get_or_404(student_id)
+    student = db.session.scalar(sa.select(Student).where(Student.student_id == student_id))
     form = UpdateStudentForm(obj=student)
 
     if form.validate_on_submit():
@@ -339,36 +422,43 @@ def update_student(student_id):
         student.year = form.year.data
         student.department = form.department.data
 
-        if form.profile_img.data:
+        if request.files['profile_img'].filename:
             if student.profile_img:
-                os.remove(student.profile_img)
+                try:
+                    os.remove(student.profile_img)
+                except Exception:
+                    pass
             profile_img_path = os.path.dirname(student.profile_img)
-            profile_img_filename = form.profile_img.data.filename
+            profile_img = request.files['profile_img']
+            profile_img_filename = profile_img.filename
             profile_img_file_path = os.path.join(
                 profile_img_path, profile_img_filename)
-            form.profile_img.data.save(profile_img_file_path)
+            profile_img.save(profile_img_file_path)
             student.profile_img = profile_img_file_path
 
         for i in range(1, 4):
             file_field = getattr(form, f'laptop_img{i}')
             if file_field.data:
-                existing_img = student.laptop.images[i].image_path
+                existing_img = student.laptop.images[i - 1].image_path
                 if existing_img:
-                    os.remove(existing_img)
+                    try:
+                        os.remove(existing_img)
+                    except Exception:
+                        pass
                 laptop_img_dirpath = os.path.dirname(existing_img)
-                laptop_img_filename = file_field.data.filename
+                laptop_img = request.files[f'laptop_img{i}']
+                laptop_img_filename = laptop_img.filename
                 laptop_img_filepath = os.path.join(
                     laptop_img_dirpath, laptop_img_filename)
-                file_field.data.save(laptop_img_filepath)
-                student.laptop.images[i].image_path = laptop_img_filepath
+                laptop_img.save(laptop_img_filepath)
+                student.laptop.images[i - 1].image_path = laptop_img_filepath
         db.session.commit()
         flash('Student updated successfully!', 'success')
-        return redirect(url_for('admin_page'))
-    
-    return render_template('update_student.html', form=form, student=student)
+        return redirect(url_for(
+            'update_student', student_id=student.student_id))
 
-
-
+    return render_template('update_student.html',
+                           form=form, student=student)
 
 
 
