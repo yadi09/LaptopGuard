@@ -9,22 +9,42 @@
 </head>
 
 <style>
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            color: black;
-	    border-radius: 50px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-	.btn-green {
-            background-color: green;
-        }
-        .btn-red {
-            background-color: red;
-        }
+  .btn {
+      padding: 10px 20px;
+      border: none;
+      color: black;
+      border-radius: 50px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+  }
+  
+  .btn-green {
+      background-color: green;
+  }
+  .btn-red {
+      background-color: red;
+  }
+  .clickable {
+      cursor: pointer;  /* This makes the cursor change to a pointer */
+  }
+  .close-btn {
+      position: absolute;
+      width: 30px;
+      hight: 100px;
+      top: 10px;
+      left: 10px;
+      font-size: 20px;
+      color: #000000;
+      cursor: pointer;
+      background: none;
+      border: 3px solid black;
+      border-radius: 50%;
+  }
+  
+  .close-btn:hover {
+      background-color: #e53935;
+  }
 </style>
 
 <body>
@@ -83,6 +103,12 @@
 
 
 
+    <div id="updateSidebar" style="display:none; position:fixed; top:0; right:0; width:83%; height:100%; background-color:white; box-shadow:-2px 0 5px rgba(0,0,0,0.5); z-index:1000;">
+      <button class="close-btn" onclick="closeUpdatePage()">X</button>
+      <iframe id="updateIframe" style="width:100%; height:100%; border:none;"></iframe>
+    </div>
+
+
     <div class="container2">
       <table class="result-table" id="update-table">
 	{% include 'checked_in_students_list.html' %}
@@ -135,6 +161,24 @@
         })
         .catch(error => console.error('Error:', error));
     });
+
+
+  function openStudentProfilePage(studentId) {
+      const sidebar = document.getElementById("updateSidebar");
+      const iframe = document.getElementById("updateIframe");
+
+      // Load the update page in the iframe
+      iframe.src = `/student_profile_page/${studentId}`;
+
+      // Show the sidebar
+      sidebar.style.display = "block";
+  }
+
+
+  function closeUpdatePage() {
+      const sidebar = document.getElementById("updateSidebar");
+      sidebar.style.display = "none";
+  }
 </script>
     
 

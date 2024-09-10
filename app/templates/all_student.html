@@ -3,35 +3,35 @@
 {% block content %}
 
 <section id="interface">
-      <div class="navigation">
-        <div id="menu-bar">
-          <i class="fa-solid fa-bars"></i>
-        </div>
-        <h1>All Student</h1>
+  <div class="navigation">
+    <div id="menu-bar">
+      <i class="fa-solid fa-bars"></i>
+    </div>
+    <h1>All Student</h1>
+  </div>
+  
+  <div class="body">
+    <div class="search">
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search" name="q" hx-get="/search_student" hx-trigger="keyup changed" hx-target="#results">
       </div>
-
-      <div class="body">
-        <div class="search">
-          <div class="search-bar">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Search">
-          </div>
-        </div>
-
+    </div>
+    
     <div class="std_list">
       <div class="table-controls">
         <div class="buttons">
-            <button id="deleteButton" class="delete">Delete</button>
-            <button class="add-new" onclick="openRegistration()">Add New Student</button>
+          <button id="deleteButton" class="delete">Delete</button>
+          <button class="add-new" onclick="openRegistration()">Add New Student</button>
         </div>
       </div>
-
-      <table>
+      
+      <table id="results">
 	{% include 'all_student_list.html' %}
       </table>
     </div>
-
-    </section>
+    
+</section>
 
 {% include 'registration.html' %}
 
@@ -41,99 +41,133 @@
 </div>
 
 
-    <script>
-      const menuBar = document.getElementById('menu-bar');
-      const menu = document.getElementById('menu');
 
-      menuBar.addEventListener('click', () => {
+
+<script>
+  const menuBar = document.getElementById('menu-bar');
+  const menu = document.getElementById('menu');
+  
+  menuBar.addEventListener('click', () => {
       menu.classList.toggle('active'); 
-      });
-
-      function openUpdateForm() {
-          document.getElementById("updateSidebar").classList.add("show");
-      }
-
-      function closeUpdateForm() {
-          document.getElementById("updateSidebar").classList.remove("show");
-      }
-
-      function openRegistration() {
-          document.getElementById("registrationSidebar").classList.add("open");
-      }
-
-      function closeRegistration() {
-            document.getElementById("registrationSidebar").classList.remove("open");
-      }
-
-      {% if show_sidebar == True %}
+  });
+  
+  function openUpdateForm() {
+      document.getElementById("updateSidebar").classList.add("show");
+  }
+  
+  function closeUpdateForm() {
+      document.getElementById("updateSidebar").classList.remove("show");
+  }
+  
+  function openRegistration() {
       document.getElementById("registrationSidebar").classList.add("open");
-      {% endif %}
-
-
-
-      function openUpdatePage(studentId) {
-          const sidebar = document.getElementById("updateSidebar");
-          const iframe = document.getElementById("updateIframe");
-
-          // Load the update page in the iframe
-          iframe.src = `/update_student/${studentId}`;
-
-          // Show the sidebar
-          sidebar.style.display = "block";
+  }
+  
+  function closeRegistration() {
+      document.getElementById("registrationSidebar").classList.remove("open");
+  }
+  
+  {% if show_sidebar == True %}
+  document.getElementById("registrationSidebar").classList.add("open");
+  {% endif %}
+  
+  
+  
+  function openUpdatePage(studentId) {
+      const sidebar = document.getElementById("updateSidebar");
+      const iframe = document.getElementById("updateIframe");
+      
+      // Load the update page in the iframe
+      iframe.src = `/update_student/${studentId}`;
+      
+      // Show the sidebar
+      sidebar.style.display = "block";
+  }
+  
+  function closeUpdatePage() {
+      const sidebar = document.getElementById("updateSidebar");
+      sidebar.style.display = "none";
+  }
+  
+  
+  document.getElementById('select-all').onclick = function() {
+      var checkboxs = document.querySelectorAll('input[type="checkbox"]');
+      for (var checkbox of checkboxs) {
+	  checkbox.checked = this.checked;
       }
-
-      function closeUpdatePage() {
-          const sidebar = document.getElementById("updateSidebar");
-          sidebar.style.display = "none";
-      }
+  }
 
 
-      document.getElementById('select-all').onclick = function() {
-	  var checkboxs = document.querySelectorAll('input[type="checkbox"]');
-	  for (var checkbox of checkboxs) {
-	      checkbox.checked = this.checked;
+  function deleteStudent(studentId) {
+      fetch(`/delete_student/${studentId}`, {
+	  method: 'POST',
+	  headers: {
+	      'Content-Type': 'application/json',
 	  }
-      }
-
-
-      document.getElementById('deleteButton').addEventListener('click', function() {
-	  fetch('{{ url_for("delete_selected_students") }}', {
-	      method: 'POST',
-	      headers: {
-		  'Content-Type': 'application/json',
-	      },
-	      body: JSON.stringify({
-		  selected_students: getSelectedStudents()
-	      })
-	  })
-	      .then(response => response.json())
-	      .then(data => {
-		  if (data.success) {
-		      alert('Selected students deleted successfully!');
-		      window.location.href = window.location.href;
-		  }
-		  if (data.success === False) {
-		      alert('Selected students deleted unsuccessfully!');
-		  }
-	      })
-	      .catch(error => console.error('Error:', error));
-      });
-
-
-      function getSelectedStudents() {
-	  const selected = [];
-
-	  const checkboxes = document.querySelectorAll('.student-checkbox');
-
-	  checkboxes.forEach(function(checkbox) {
-	      if (checkbox.checked) {
-		  selected.push(checkbox.value);
+      })
+	  .then(response => response.json())
+	  .then(data => {
+	      if (data.success) {
+		  alert('Students deleted successfully!')
+		  window.location.href = window.location.href;
+	      } else {
+		  alert('Students Not deleted!');
 	      }
-	  });
-
-	  return selected;
-      }
-    </script>
+	  })
+	  .catch(error => console.error('Error:', error));
+  }
+  
+  
+  document.getElementById('deleteButton').addEventListener('click', function() {
+      fetch('{{ url_for("delete_selected_students") }}', {
+	  method: 'POST',
+	  headers: {
+	      'Content-Type': 'application/json',
+	  },
+	  body: JSON.stringify({
+	      selected_students: getSelectedStudents()
+	  })
+      })
+	  .then(response => response.json())
+	  .then(data => {
+	      if (data.success) {
+		  alert('Selected students deleted successfully!');
+		  window.location.href = window.location.href;
+	      }
+	      if (data.success === False) {
+		  alert('Selected students deleted unsuccessfully!');
+	      }
+	  })
+	  .catch(error => console.error('Error:', error));
+  });
+  
+  
+  function getSelectedStudents() {
+      const selected = [];
+      
+      const checkboxes = document.querySelectorAll('.student-checkbox');
+      
+      checkboxes.forEach(function(checkbox) {
+	  if (checkbox.checked) {
+	      selected.push(checkbox.value);
+	  }
+      });
+      
+      return selected;
+  }
+  
+  function openStudentProfilePage(studentId) {
+      const sidebar = document.getElementById("updateSidebar");
+      const iframe = document.getElementById("updateIframe");
+      
+      // Load the update page in the iframe
+      iframe.src = `/student_profile_page/${studentId}`;
+      
+      // Show the sidebar
+      sidebar.style.display = "block";
+  }
+  
+</script>
 
 
 {% endblock %}

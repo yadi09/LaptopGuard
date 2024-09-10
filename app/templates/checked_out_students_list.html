@@ -10,7 +10,7 @@
   {% for student in checked_out_students %}
   {% if student.exit_logs %}
   <tr>
-    <td><a href="#">{{ student.fullname }}</a></td>
+    <td class="clickable" onclick="openStudentProfilePage('{{ student.student_id }}')">{{ student.fullname }}</td>
     <td>{{ student.department }}</td>
     <td>{{ student.year }}</td>
     <td>{{ student.exit_logs[-1].timestamp }}</td>

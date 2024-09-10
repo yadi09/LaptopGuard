@@ -7,7 +7,8 @@
     <title>{{ title }} - laptop_guard KEU</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/all_student.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-<style>
+    <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+    <style>
   .notification {
     position: fixed;
     top: 10px;
@@ -21,6 +22,10 @@
   
   .notification.error {
     background-color: #f44336; /* Red background for errors */
+  }
+
+  .clickable {
+      cursor: pointer;  /* This makes the cursor change to a pointer */
   }
 </style>
   </head>

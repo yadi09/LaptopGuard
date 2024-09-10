@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Check In</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lib_exit.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-
+    
     <style>
       .btn {
           padding: 10px 20px;
@@ -24,120 +24,162 @@
       .btn-red {
           background-color: red;
       }
+
+      .clickable {
+	  cursor: pointer;  /* This makes the cursor change to a pointer */
+      }
+      .close-btn {
+	  position: absolute;
+	  width: 30px;
+	  hight: 100px;
+	  top: 10px;
+	  left: 10px;
+	  font-size: 20px;
+	  color: #000000;
+	  cursor: pointer;
+	  background: none;
+	  border: 3px solid black;
+	  border-radius: 50%;
+      }
+      
+      .close-btn:hover {
+	  background-color: #e53935;
+      }
     </style>
     
-</head>
-<body>
+  </head>
+  <body>
     <header class="header-bar">
-        <div class="logo">
-            <a href="/exit_check_in">
-                <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="">
-            </a>
-        </div>
-        <div class="header-title">
-            Exit Check Out 
-        </div>
-        <div class="logout">
-            <a href="/logout" class="logout-link">Logout</a>
-        </div>
+      <div class="logo">
+        <a href="/exit_check_in">
+          <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="">
+        </a>
+      </div>
+      <div class="header-title">
+        Exit Check Out 
+      </div>
+      <div class="logout">
+        <a href="/logout" class="logout-link">Logout</a>
+      </div>
     </header>
-
-
+    
+    
     <div class="form-container">
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            {{ form.student_id(size=20, id='search-input', class='input', placeholder='Search') }}</br>
-            <button type="submit" class='search_button'><i class="fa-solid fa-magnifying-glass"></i></button>
-        </form>
-
-
-        <!-- Sidebar for student profile -->
-        <div id="sidebar" class="{{ 'show' if student else '' }}">
-            {% if student %}
-            <h2>Student Profile</h2>
-            <div class='info'>
-              <img src="{{ url_for('static', filename=student.profile_img[11:])}}">
-              <div class='std_info'>
-                <p><strong>Full Name: </strong> {{ student.fullname }}</p>
-                <p><strong>Department: </strong> {{ student.department }}</p>
-                <p><strong>Year: </strong> {{ student.year }}</p>
-                <p><strong>Status: </strong>
-                  <button id='status-btn' class='btn'>
-                    {% if not student.exit_logs %}
-                    IN
-                    {% else %}
-                    {{ 'IN' if student.exit_logs[-1].status == 'IN' else 'OUT' }}
-                    {% endif %}
-                  </button>
-                </p>
-              </div>
-            </div>
-            <hr>
-            <div class='laptop'>
-              {% for laptop_img in student.laptop.images  %}
-              <img src="{{ url_for('static', filename=laptop_img.image_path[11:])}}">
-              {% endfor %}
-            </div>
-            {% endif %}
+      <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.student_id(size=20, id='search-input', class='input', placeholder='Search') }}</br>
+        <button type="submit" class='search_button'><i class="fa-solid fa-magnifying-glass"></i></button>
+      </form>
+      
+      
+      <!-- Sidebar for student profile -->
+      <div id="sidebar" class="{{ 'show' if student else '' }}">
+        {% if student %}
+        <h2>Student Profile</h2>
+        <div class='info'>
+          <img src="{{ url_for('static', filename=student.profile_img[11:])}}">
+          <div class='std_info'>
+            <p><strong>Full Name: </strong> {{ student.fullname }}</p>
+            <p><strong>Department: </strong> {{ student.department }}</p>
+            <p><strong>Year: </strong> {{ student.year }}</p>
+            <p><strong>Status: </strong>
+              <button id='status-btn' class='btn'>
+                {% if not student.exit_logs %}
+                IN
+                {% else %}
+                {{ 'IN' if student.exit_logs[-1].status == 'IN' else 'OUT' }}
+                {% endif %}
+              </button>
+            </p>
+          </div>
         </div>
+        <hr>
+        <div class='laptop'>
+          {% for laptop_img in student.laptop.images  %}
+          <img src="{{ url_for('static', filename=laptop_img.image_path[11:])}}">
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
     </div>
 
-
+    
+    <div id="updateSidebar" style="display:none; position:fixed; top:0; right:0; width:83%; height:100%; background-color:white; box-shadow:-2px 0 5px rgba(0,0,0,0.5); z-index:1000;">
+      <button class="close-btn" onclick="closeUpdatePage()">X</button>
+      <iframe id="updateIframe" style="width:100%; height:100%; border:none;"></iframe>
+    </div>
+    
 
     <div class="container2">
-        <table class="result-table" id="update-table">
-	  {% include 'checked_out_students_list.html' %}
-        </table>
+      <table class="result-table" id="update-table">
+	{% include 'checked_out_students_list.html' %}
+      </table>
     </div>
+    
+    
+    
+    <script>
+      function updateButtonColor(status) {
+          const statusBtn = document.getElementById('status-btn');
+	  
+          // Update the text content based on the status
+          statusBtn.textContent = status;
+	  
+          // Apply the correct color based on the status
+          if (status === 'IN') {
+              statusBtn.classList.add('btn-green');
+              statusBtn.classList.remove('btn-red');
+          } else if (status === 'OUT') {
+              statusBtn.classList.add('btn-red');
+              statusBtn.classList.remove('btn-green');
+          }
+      }
+      
+      // Initial color update based on the current button text
+      const status = document.getElementById('status-btn').textContent.trim();
+      updateButtonColor(status);
+      
+      document.getElementById('status-btn').addEventListener('click', function() {
+	  const studentId = {{ student.student_id }};
+	  fetch(`/update_exit_status/${studentId}`, {
+              method: 'POST',
+              headers: {
+		  'Content-Type': 'application/json',
+              },
+	  })
+              .then(response => response.json())
+              .then(data => {
+		  // Update the button based on the response status
+		  updateButtonColor(data.status);
+		  const searchInput = document.getElementById('search-input');
+		  searchInput.value = "";
+		  
+		  // Optionally, hide the sidebar if required
+		  document.getElementById('sidebar').classList.remove('show');
+		  
+		  // Update the checked-in students table with the new HTML
+		  document.getElementById('update-table').innerHTML = data.checked_out_students_html;
+              })
+              .catch(error => console.error('Error:', error));
+      });
 
+      function openStudentProfilePage(studentId) {
+	  const sidebar = document.getElementById("updateSidebar");
+	  const iframe = document.getElementById("updateIframe");
+	  
+	  // Load the update page in the iframe
+	  iframe.src = `/student_profile_page/${studentId}`;
+	  
+	  // Show the sidebar
+	  sidebar.style.display = "block";
+      }
 
-
-<script>
-    function updateButtonColor(status) {
-        const statusBtn = document.getElementById('status-btn');
-
-        // Update the text content based on the status
-        statusBtn.textContent = status;
-
-        // Apply the correct color based on the status
-        if (status === 'IN') {
-            statusBtn.classList.add('btn-green');
-            statusBtn.classList.remove('btn-red');
-        } else if (status === 'OUT') {
-            statusBtn.classList.add('btn-red');
-            statusBtn.classList.remove('btn-green');
-        }
-    }
-
-  // Initial color update based on the current button text
-  const status = document.getElementById('status-btn').textContent.trim();
-  updateButtonColor(status);
-
-  document.getElementById('status-btn').addEventListener('click', function() {
-      const studentId = {{ student.student_id }};
-      fetch(`/update_exit_status/${studentId}`, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-      })
-          .then(response => response.json())
-          .then(data => {
-              // Update the button based on the response status
-              updateButtonColor(data.status);
-              const searchInput = document.getElementById('search-input');
-              searchInput.value = "";
-	      
-              // Optionally, hide the sidebar if required
-              document.getElementById('sidebar').classList.remove('show');
-
-	      // Update the checked-in students table with the new HTML
-              document.getElementById('update-table').innerHTML = data.checked_out_students_html;
-          })
-          .catch(error => console.error('Error:', error));
-  });
-</script>
-
-
-</body>
+      function closeUpdatePage() {
+	  const sidebar = document.getElementById("updateSidebar");
+	  sidebar.style.display = "none";
+      }
+    </script>
+    
+    
+  </body>
 </html>

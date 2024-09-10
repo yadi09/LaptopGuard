@@ -10,7 +10,7 @@
   {% for student in checked_in_students %}
   {% if student.lib_logs %}
   <tr>
-    <td><a href="#">{{ student.fullname }}</a></td>
+    <td class="clickable" onclick="openStudentProfilePage('{{ student.student_id }}')">{{ student.fullname }}</td>
     <td>{{ student.department }}</td>
     <td>{{ student.year }}</td>
     <td>{{ student.lib_logs[-1].timestamp }}</td>

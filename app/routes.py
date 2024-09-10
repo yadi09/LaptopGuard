@@ -117,6 +117,17 @@ def search():
     return redirect('lib.html', form=form, student=student)
 
 
+@app.route('/search_student')
+def search_student():
+    q = request.args.get("q")
+
+    if q:
+        all_student = Student.query.filter(Student.fullname.icontains(q) | Student.student_id.icontains(q) | Student.year.icontains(q) | Student.department.icontains(q) | Student.gender.icontains(q))
+    else:
+        all_student = []
+
+    return render_template('all_student_list.html', all_student=all_student)
+
 
 def get_checked_in_students():
     latest_log_alias = so.aliased(LibLogs)
@@ -168,12 +179,6 @@ def get_checked_out_students():
 
 def get_all_students():
     students = Student.query.all()
-    """
-    query = sa.select(Student)
-    students = db.session.execute(query).all()
-    list_of_students = []
-    for std in students:
-        list_of_students.append(std[0])"""
     return students
 
 
@@ -248,7 +253,10 @@ def delete_selected_students():
         if not selected_students:
             return jsonify(success=False,
                            message="No students selected"), 400
-   
+        
+        delete_student_files(selected_students)
+
+        """
         ExitLogs.query.filter(ExitLogs.student_id.in_(
             selected_students)).delete(synchronize_session=False)
         LibLogs.query.filter(LibLogs.student_id.in_(
@@ -268,13 +276,6 @@ def delete_selected_students():
 
             profile_img_dir_path = os.path.dirname(student.profile_img)
             std_dir = os.path.dirname(profile_img_dir_path)
-            """
-            if os.path.exists(profile_img_dir_path):
-                try:
-                    os.rmdir(dir_path)
-                    os.rmdir(std_dir)
-                except Exception:
-                    pass"""
 
             "delete laptop img and dir"
             for lp_img in laptop_img:
@@ -309,7 +310,7 @@ def delete_selected_students():
                 synchronize_session=False)
 
             db.session.commit()
-
+"""
         return jsonify(
             success=True,
             message=f"Deleted {len(selected_students)} students.")
@@ -320,6 +321,65 @@ def delete_selected_students():
             message="An error occurred while deleting students.",
             error=str(e)), 500
 
+
+
+def delete_student_files(selected_students):
+    ExitLogs.query.filter(ExitLogs.student_id.in_(
+        selected_students)).delete(synchronize_session=False)
+    LibLogs.query.filter(LibLogs.student_id.in_(
+        selected_students)).delete(synchronize_session=False)
+    
+    for std in selected_students:
+        student = Student.query.filter(
+            Student.student_id == std).first()
+        laptop = Laptop.query.filter(
+            Laptop.id == student.laptop_id).first()
+        laptop_img = LaptopImage.query.filter(
+            LaptopImage.laptop_in_id == laptop.id).all()
+
+        "delete profile img and dir, std dir"
+        if os.path.exists(student.profile_img):
+            os.remove(student.profile_img)
+
+        profile_img_dir_path = os.path.dirname(student.profile_img)
+        std_dir = os.path.dirname(profile_img_dir_path)
+
+        "delete laptop img and dir"
+        for lp_img in laptop_img:
+            if os.path.exists(lp_img.image_path):
+                os.remove(lp_img.image_path)
+
+        dir_path = os.path.dirname(laptop_img[0].image_path)
+        if os.path.exists(dir_path):
+            try:
+                os.rmdir(dir_path)
+            except Exception:
+                pass
+
+        "delete profile_img dir and student dir"
+        if os.path.exists(profile_img_dir_path):
+            try:
+                os.rmdir(profile_img_dir_path)
+                os.rmdir(std_dir)
+            except Exception:
+                pass
+
+        "delete proccess"
+        LaptopImage.query.filter(
+            LaptopImage.laptop_in_id == laptop.id).delete(
+                synchronize_session=False)
+        
+        Student.query.filter(
+            Student.student_id == student.student_id).delete(
+                synchronize_session=False)
+        
+        Laptop.query.filter(Laptop.id == laptop.id).delete(
+            synchronize_session=False)
+
+        db.session.commit()
+            
+    
+    
 
 
 @app.route('/register_student', methods=['POST'])
@@ -462,6 +522,22 @@ def update_student(student_id):
 
 
 
+@app.route('/student_profile_page/<studentId>')
+@login_required
+def student_profile(studentId):
+    student = Student.query.filter(Student.student_id == studentId).first()
+    return render_template('student_profile.html', student=student)
+
+
+
+@app.route('/delete_student/<studentId>', methods=['POST'])
+def delete_student(studentId):
+    student = Student.query.filter(Student.student_id == studentId).first()
+    if not student:
+        return jsonify(success=False)
+
+    delete_student_files([studentId])
+    return jsonify(success=True)
 
 
 
