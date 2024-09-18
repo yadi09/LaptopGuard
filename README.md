@@ -72,3 +72,21 @@ Ensure you have the following installed:
 
    ```bash
    flask run
+
+8. **Access the app:**
+
+   ```bash
+   Open http://127.0.0.1:5000 in your browser.
+
+## 🧑‍💻 Usage
+- **Admin Login:**
+Admins can log in to the dashboard to manage student data.
+
+- **Student Registration:**
+Add new students, including uploading their profile and laptop images.
+
+- **Check-in/Check-out:**
+Track the library check-in and check-out statuses for students.
+
+- **Student Search:**
+Use the search functionality to find students and view their logs.
