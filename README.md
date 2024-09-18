@@ -1,4 +1,3 @@
-                              ------------------ LaptopGuard -------------------                          
 # LaptopGuard
 
 LaptopGuard is a Flask-based web application that helps administrators track student check-ins and check-outs in a library setting. It ensures that student data is securely managed, allowing users to log entries and monitor laptop usage.
@@ -15,7 +14,7 @@ Read the in-depth blog post about the development process:
 
 ## 👨‍💻 Author
 
-- **[Your Name](https://linkedin.com/in/your-linkedin)**
+- **[Your Name](https://www.linkedin.com/in/yadamzer-terefe-a9a930291/)**
 
 ## 📋 Features
 
@@ -43,3 +42,18 @@ Ensure you have the following installed:
 
    ```bash
    git clone https://github.com/yourusername/LaptopGuard.git
+
+2. **Navigate to the project directory**
+
+   ```bash
+   cd LaptopGuard
+
+3. **Create a virtual environment**
+
+   ```bash
+   python3 -m venv venv
+
+4. **Activate the virtual environment**
+
+   ```bash
+   source venv/bin/activate
