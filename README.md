@@ -57,3 +57,18 @@ Ensure you have the following installed:
 
    ```bash
    source venv/bin/activate
+
+5. **Install the required dependencies:**
+
+   ```bash
+   pip install -r requirements.txt
+
+6. **Initialize the database:**
+
+   ```bash
+   flask db upgrade
+
+7. **Run the application:**
+
+   ```bash
+   flask run
