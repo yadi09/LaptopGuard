@@ -63,21 +63,6 @@ def lib():
     """
     Handles the library check-in page, allowing authorized users to search for 
     students, change the status and view currently checked-in students.
-
-    Methods:
-        GET: Renders the library check-in page with a search form and a list of 
-             checked-in students.
-        POST: Processes the search form submission to find a student by ID. If 
-              found, displays student details; otherwise, shows a 'student not 
-              found' message.
-
-    Returns:
-        RenderTemplate: Renders the 'lib.html' template with the search form, 
-                        student details (if found), and list of checked-in students.
-
-    Redirects:
-        If the current user is not authorized (i.e., not a 'lib' user), logs them 
-        out and redirects to the login page.
     """
 
     if current_user.username == 'lib':
