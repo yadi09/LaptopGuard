@@ -52,7 +52,6 @@ class Student(db.Model, BaseModel):
     "Represents a student in the system."
     
     __tablename__ = 'students'
-
     student_id: so.Mapped[str] = so.mapped_column(
         sa.String(20), unique=True, nullable=False)  # Unique student ID
     fullname: so.Mapped[str] = so.mapped_column(sa.String(25), nullable=False) # Student's full name
@@ -90,7 +89,6 @@ class LaptopImage(db.Model):
     "Represents an image associated with a laptop."
     
     __tablename__ = 'laptop_images'
-
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)  # Primary key
     laptop_in_id: so.Mapped[int] = so.mapped_column(
         sa.ForeignKey('laptops.id'), nullable=False) # Foreign key to Laptop table
@@ -103,7 +101,6 @@ class Laptop(db.Model, BaseModel):
     "Represents a laptop assigned to a student."
     
     __tablename__ = 'laptops'
-
     laptop_unique_id: so.Mapped[int] = so.mapped_column(
         sa.Integer, unique=True, nullable=False) # Unique identifier for the laptop
 

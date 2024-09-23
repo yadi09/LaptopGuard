@@ -106,6 +106,7 @@ class UpdateStudentForm(RegistrationForm):
             ('ART', 'Arts')],
         validators=[DataRequired()])  # Department dropdown
     """
+
     profile_img = FileField(
         'Profile Picture',
         validators=[FileAllowed(
