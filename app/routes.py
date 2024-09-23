@@ -154,13 +154,10 @@ def admin():
         return redirect(url_for('login'))
 
 
-
+"""
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    """
-    Handles student search functionality. Allows users to search for a student 
-    by their ID and displays the search result.
-    """
+    
 
     form = SearchForm()
     if form.validate_on_submit():
@@ -169,6 +166,7 @@ def search():
         if not student:
             flash('Student not found', 'nfound')
     return redirect('lib.html', form=form, student=student)
+"""
 
 
 @app.route('/search_student')
