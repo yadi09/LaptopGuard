@@ -622,7 +622,6 @@ def delete_student(studentId):
     return jsonify(success=True)
 
 
-
 @app.route('/logout')
 def logout():
     """
