@@ -276,7 +276,6 @@ def update_lib_status(student_id):
                     'checked_in_students_html': checked_in_students_html})
 
 
-
 @app.route('/update_exit_status/<student_id>', methods=['GET', 'POST'])
 def update_exit_status(student_id):
     """
