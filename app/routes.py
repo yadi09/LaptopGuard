@@ -89,7 +89,6 @@ def lib():
         return redirect(url_for('login'))
 
 
-
 @app.route('/exit_check_in', methods=['GET', 'POST'])
 @login_required
 def exit():
