@@ -56,7 +56,6 @@ def login():
     return render_template('login.html', form=form)
 
 
-
 @app.route('/library_check_in', methods=['GET', 'POST'])
 @login_required
 def lib():
@@ -307,7 +306,6 @@ def update_exit_status(student_id):
         'checked_out_students_list.html', checked_out_students=checked_out_students)
     return jsonify({'status': new_log.status,
                     'checked_out_students_html': checked_out_students_html})
-
 
 
 @app.route('/delete_selected_students', methods=['POST'])
