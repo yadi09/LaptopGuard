@@ -335,7 +335,6 @@ def delete_selected_students():
             error=str(e)), 500
 
 
-
 def delete_student_files(selected_students):
     """
     Deletes student records and associated files for the given list of student IDs.
