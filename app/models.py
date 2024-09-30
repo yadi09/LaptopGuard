@@ -140,7 +140,6 @@ class Laptop(db.Model, BaseModel):
         return f'<Laptop {self.laptop_unique_id}>'  # String representation of the Laptop object
 
 
-
 class LibLogs(db.Model):
     "Represents a log entry for a student's library activities."
     
