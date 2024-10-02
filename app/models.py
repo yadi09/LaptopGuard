@@ -47,7 +47,6 @@ class BaseModel():
         sa.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # Timestamp when the record was last updated
 
 
-
 class Student(db.Model, BaseModel):
     "Represents a student in the system."
     
