@@ -408,7 +408,6 @@ def delete_student_files(selected_students):
         db.session.commit()
 
 
-
 @app.route('/register_student', methods=['POST'])
 def register_student():
     """
