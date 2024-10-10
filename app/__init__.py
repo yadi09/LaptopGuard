@@ -15,3 +15,4 @@ login.login_view = 'login'  # Specify the login view
 
 
 from app import routes, models  # Import routes and models
+
