@@ -173,4 +173,3 @@ class ExitLogs(db.Model):
     student: so.Mapped[Student] = so.relationship(
         'Student',
         back_populates='exit_logs')  # Relationship to the Student model
-
