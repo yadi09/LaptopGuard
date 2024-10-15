@@ -13,5 +13,4 @@ migrate = Migrate(app, db)  # Enable database migrations
 login = LoginManager(app)  # Manage user login sessions
 login.login_view = 'login'  # Specify the login view
 
-
 from app import routes, models  # Import routes and models
