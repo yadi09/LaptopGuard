@@ -130,3 +130,4 @@ class UpdateStudentForm(RegistrationForm):
     
 
     submit = SubmitField('Update')  # Submit button for updating student info
+
