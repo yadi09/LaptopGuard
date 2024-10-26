@@ -27,3 +27,5 @@ class Config:
 
     # Limit the maximum size of file uploads to 16MB
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+
+
