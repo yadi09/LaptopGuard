@@ -31,6 +31,9 @@ class User(db.Model, UserMixin):
         # Set hashed password
         self.password_hash = generate_password_hash(password)
 
+
+
+    
     def check_password(self, password):
         # Verify password against hash
         return check_password_hash(self.password_hash, password)
