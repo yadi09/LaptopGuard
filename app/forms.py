@@ -127,6 +127,7 @@ class UpdateStudentForm(RegistrationForm):
         validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif',
                                  'bmp', 'tiff', 'svg'],
                                 'Images only!')])  # Laptop picture 3
+
     
 
     submit = SubmitField('Update')  # Submit button for updating student info
